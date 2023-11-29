@@ -43,6 +43,15 @@ class RenderObject {
       mat4.rotateZ(this.model.rotation, this.model.rotation, angle)
     }
   }
+  
+  rotateQuaternion(quaternion) {
+    // Convert quaternion to rotation matrix
+    let rotationMatrix = mat4.create();
+    mat4.fromQuat(rotationMatrix, quaternion);
+
+    // Apply this rotation to the spaceship's model matrix
+    mat4.multiply(this.modelMatrix, this.modelMatrix, rotationMatrix);
+  }
 
   translate(translateVec) {
     vec3.add(this.model.position, this.model.position, vec3.fromValues(translateVec[0], translateVec[1], translateVec[2]));

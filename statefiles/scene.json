@@ -4,11 +4,11 @@
         {
           "name": "tempPlane",
           "material": {
-            "diffuse": [0.3, 0.3, 0.3],
+            "diffuse": [0.1, 0, 0],
             "ambient": [0.5, 0.5, 0.5],
             "specular": [0.5, 0.5, 0.5],
             "n": 32,
-            "alpha": 1,
+            "alpha": 0.25,
             "shaderType": 1
           },
           "type": "plane",
@@ -23,7 +23,7 @@
         {
           "name": "SpaceShip",
           "material": {
-            "diffuse": [0, 0.7490196078431373, 1],
+            "diffuse": [0, 0.7, 1],
             "ambient": [0.3, 0.3, 0.3],
             "specular": [0.5, 0.5, 0.5],
             "n": 10.000002,
