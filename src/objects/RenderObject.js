@@ -1,3 +1,4 @@
+MAX_LIGHTS = 256;
 
 class RenderObject {
   constructor(glContext, object) {
@@ -121,22 +122,33 @@ class RenderObject {
         projection: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
         view: this.gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
         model: this.gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
-        //normalMatrix: this.gl.getUniformLocation(shaderProgram, 'normalMatrix'),
+        normalMatrix: this.gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
         diffuseVal: this.gl.getUniformLocation(shaderProgram, 'diffuseVal'),
         ambientVal: this.gl.getUniformLocation(shaderProgram, 'ambientVal'),
-        //specularVal: this.gl.getUniformLocation(shaderProgram, 'specularVal'),
-        //nVal: this.gl.getUniformLocation(shaderProgram, 'nVal'),
-        //cameraPosition: this.gl.getUniformLocation(shaderProgram, 'uCameraPosition'),
-        //mainLightPositionLocation: this.gl.getUniformLocation(shaderProgram, 'mainLight.position'),
-        //mainLightColourLocation: this.gl.getUniformLocation(shaderProgram, 'mainLight.colour'),
-        // numLights: this.gl.getUniformLocation(shaderProgram, 'numLights'),
-        // lightPositions: this.gl.getUniformLocation(shaderProgram, 'uLightPositions'),
-        // lightColours: this.gl.getUniformLocation(shaderProgram, 'uLightColours'),
-        // lightStrengths: this.gl.getUniformLocation(shaderProgram, 'uLightStrengths'),
+        specularVal: this.gl.getUniformLocation(shaderProgram, 'specularVal'),
+        nVal: this.gl.getUniformLocation(shaderProgram, 'nVal'),
+        //alphaVal: this.gl.getUniformLocation(shaderProgram, 'alphaVal'),
+        cameraPosition: this.gl.getUniformLocation(shaderProgram, 'uCameraPosition'),
+        numLights: this.gl.getUniformLocation(shaderProgram, 'numLights'),
+        //lightPositions: this.gl.getUniformLocation(shaderProgram, 'uLightPositions'),
+        //lightColours: this.gl.getUniformLocation(shaderProgram, 'uLightColours'),
+        //lightStrengths: this.gl.getUniformLocation(shaderProgram, 'uLightStrengths'),
         sampler: this.gl.getUniformLocation(shaderProgram, 'uTexture'),
         samplerExists: this.gl.getUniformLocation(shaderProgram, "samplerExists")
       },
     };
+
+    // Add point light uniform locations
+    programInfo.uniformLocations.pointLights = [];
+    for (let i = 0; i < MAX_LIGHTS; i++) {
+        programInfo.uniformLocations.pointLights[i] = {
+            position: this.gl.getUniformLocation(shaderProgram, `pointLights[${i}].position`),
+            colour: this.gl.getUniformLocation(shaderProgram, `pointLights[${i}].colour`),
+            strength: this.gl.getUniformLocation(shaderProgram, `pointLights[${i}].strength`),
+            linear: this.gl.getUniformLocation(shaderProgram, `pointLights[${i}].linear`),
+            quadratic: this.gl.getUniformLocation(shaderProgram, `pointLights[${i}].quadratic`),
+        };
+    }
     shaderValuesErrorCheck(programInfo);
     this.programInfo = programInfo;
   }

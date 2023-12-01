@@ -61,20 +61,20 @@ async function main() {
         uniform mat4 uProjectionMatrix;
         uniform mat4 uViewMatrix;
         uniform mat4 uModelMatrix;
+        uniform mat4 uNormalMatrix;
+        uniform vec3 uCameraPosition;
 
         out vec2 oUV;
         out vec3 oFragPosition;
         out vec3 oNormal;
+        out vec3 oCameraPosition;
 
         void main() {
-            // Simply use this normal so no error is thrown
-            oNormal = aNormal;
-
-            // Postion of the fragment in world space
+            oNormal = normalize((uNormalMatrix * vec4(aNormal, 0.0)).xyz);
             gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aPosition, 1.0);
             oUV = aUV;
+            oCameraPosition = uCameraPosition;
             oFragPosition = (uModelMatrix * vec4(aPosition, 1.0)).xyz;
-            oNormal = normalize((uModelMatrix * vec4(aNormal, 1.0)).xyz);
         }
         `;
 
@@ -82,34 +82,66 @@ async function main() {
         `#version 300 es
         #define MAX_LIGHTS 20
         precision highp float;
-
-        // #12
+        
         struct PointLight {
             vec3 position;
             vec3 colour;
             float strength;
+            float linear;
+            float quadratic;
         };
-
+        
         in vec2 oUV;
-
-        uniform PointLight mainLight;
+        in vec3 oNormal;
+        in vec3 oFragPosition;
+        in vec3 oCameraPosition;
+        
+        uniform PointLight pointLights[MAX_LIGHTS];
+        uniform int numLights;
         uniform vec3 diffuseVal;
         uniform vec3 ambientVal;
+        uniform vec3 specularVal;
+        uniform float nVal;
         uniform int samplerExists;
         uniform sampler2D uTexture;
-
+        
         out vec4 fragColor;
+        
         void main() {
-            //fragColor = vec4(diffuseVal, 1.0);
-            //fragColor = vec4(mainLight.position, 1.0);
+            vec3 normal = normalize(oNormal);
+            vec3 viewDir = normalize(oCameraPosition - oFragPosition);
+            vec3 result = ambientVal; // Start with ambient lighting
+        
+            vec3 textureColor = vec3(1.0); // Default to white if no texture
             if(samplerExists == 1){
-                vec3 textureColour = texture(uTexture, oUV).rgb;
-                fragColor = vec4(diffuseVal * ambientVal * textureColour, 1.0);
-
-            } else {
-                fragColor = vec4(diffuseVal, 1.0);
+                textureColor = texture(uTexture, oUV).rgb;
             }
-        }
+        
+            for(int i = 0; i < numLights; i++) {
+                PointLight light = pointLights[i];
+                vec3 lightDir = normalize(light.position - oFragPosition);
+        
+                // Diffuse shading
+                float diff = max(dot(normal, lightDir), 0.0);
+                vec3 diffuse = light.colour * light.strength * diff * (samplerExists == 1 ? textureColor : diffuseVal);
+        
+                // Specular shading
+                vec3 reflectDir = reflect(-lightDir, normal);
+                float spec = pow(max(dot(viewDir, reflectDir), 0.0), nVal);
+                vec3 specular = light.colour * light.strength * spec * specularVal;
+        
+                // Attenuation (optional)
+                float distance = length(light.position - oFragPosition);
+                float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * (distance * distance));
+        
+                diffuse *= attenuation;
+                specular *= attenuation;
+        
+                result += diffuse + specular;
+            }
+        
+            fragColor = vec4(result, 1.0);
+        }        
         `;
 
     /**
@@ -206,7 +238,7 @@ function drawScene(gl, deltaTime, state) {
     gl.clearColor(state.settings.backgroundColor[0], state.settings.backgroundColor[1], state.settings.backgroundColor[2], 1.0); // Here we are drawing the background color that is saved in our state
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
     gl.depthFunc(gl.LEQUAL); // Near things obscure far things
-    gl.disable(gl.CULL_FACE); // Cull the backface of our objects to be more efficient
+    gl.disable(gl.CULL_FACE); // Cull the backface of our objects to be more efficient // enable?
     gl.cullFace(gl.BACK);
     // gl.frontFace(gl.CCW);
     gl.clearDepth(1.0); // Clear everything
@@ -285,11 +317,11 @@ function drawScene(gl, deltaTime, state) {
             gl.uniform3fv(object.programInfo.uniformLocations.specularVal, object.material.specular);
             gl.uniform1f(object.programInfo.uniformLocations.nVal, object.material.n);
 
-            // #12
-            let mainLight = state.pointLights[0];
-            gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.position'), mainLight.position);
-            gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.colour'), mainLight.colour);
-            gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'mainLight.strength'), mainLight.strength);
+            // Lights
+            // let mainLight = state.pointLights[0];
+            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.position'), mainLight.position);
+            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.colour'), mainLight.colour);
+            // gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'mainLight.strength'), mainLight.strength);
 
             gl.uniform1i(object.programInfo.uniformLocations.numLights, state.numLights);
             if (state.pointLights.length > 0) {

@@ -1,11 +1,13 @@
 class Game {
     constructor(state) {
         this.state = state;
+        this.state.lights = [];
         this.canvas = document.querySelector('canvas');
         this.plane = getObject(state, "tempPlane");
+        this.light = getObject(state, "lightSource");
 
         this.controlCamera = false;
-        this.cameraSpeed = 5;
+        this.cameraSpeed = 10;
 
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.mouseDownPosition = { x: 0, y: 0 };
@@ -32,18 +34,21 @@ class Game {
         };
 
         this.spaceship = getObject(state, "SpaceShip");
-        this.spaceship.rotationQuaternion = quat.create();
+        //this.spaceship.offset = { x: 3, y: 2, z: 0 };
         this.spaceshipSpeed = 0.7;
         this.spaceshipSpawnDelay = 2;
         this.spaceshipSpawned = false;
         this.cubeSpawnInterval = null; // Store the interval ID
-        this.cubeSpawnRate = 100; // Time in milliseconds between cube spawns
+        this.cubeSpawnRate = 200; // Time in milliseconds between cube spawns
+
+        this.asteroidPool = [];
+        this.spawnAsteroidField();
 
         this.rollAngle = 0; // Current roll angle
         this.currentRoll = 0;
         this.maxRollAngle = Math.PI / 6; // Maximum roll angle for full roll
-        this.rollSpeed = 0.003; // Speed at which the ship rolls
-        this.rollReturnSpeed = 0.08; // Speed at which the ship returns to no roll
+        this.rollSpeed = 0.0003; // Speed at which the ship rolls
+        this.rollReturnSpeed = 0.00004; // Speed at which the ship returns to no roll
         this.pitchAngle = 0;
         this.pitchCurrent = 0;
         this.yawAngle = 0;
@@ -54,6 +59,12 @@ class Game {
 
         this.playerHealth = 100;
         this.playerBoost = 50;
+        this.playerScore = 0;
+
+        this.isBoosting = false; // to be added later
+        this.currentBoost = this.maxBoost;
+        this.boostDecayRate = 1;
+        this.boostRegenRate = 0.5;
         
         this.spawnedObjects = [];
         this.collidableObjects = [];
@@ -101,23 +112,23 @@ class Game {
         let moveDirection = vec3.create();
     
         // Adjust the direction and target roll angle based on the keys pressed
-        if (this.keyPressed.w) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, 0.05, 0)); // Move up gradually
-        if (this.keyPressed.s) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, -0.05, 0)); // Move down gradually
+        if (this.keyPressed.w) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, 0.035, 0)); // Move up gradually
+        if (this.keyPressed.s) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, -0.035, 0)); // Move down gradually
         if (this.keyPressed.d) {
-            vec3.add(moveDirection, moveDirection, vec3.fromValues(-0.05, 0, 0)); // Move left gradually
-            this.targetRollAngle = this.maxRollAngle;
+            vec3.add(moveDirection, moveDirection, vec3.fromValues(-0.035, 0, 0)); // Move left gradually
+            this.targetRollAngle = -this.maxRollAngle;
         } 
         if (this.keyPressed.a) {
-            vec3.add(moveDirection, moveDirection, vec3.fromValues(0.05, 0, 0)); // Move right gradually
-            this.targetRollAngle = -this.maxRollAngle;
+            vec3.add(moveDirection, moveDirection, vec3.fromValues(0.035, 0, 0)); // Move right gradually
+            this.targetRollAngle = this.maxRollAngle;
         }
         if (this.keyPressed.q) {
             //this.rollAngle -= this.rollSpeed * deltaTime;
-            this.targetRollAngle = -this.maxRollAngle;
+            this.targetRollAngle = this.maxRollAngle;
         }
         if (this.keyPressed.e) {
             //this.rollAngle += this.rollSpeed * deltaTime;
-            this.targetRollAngle = this.maxRollAngle;
+            this.targetRollAngle = -this.maxRollAngle;
         }
 
         // Clamp the currentRollAngle to prevent excessive rolling
@@ -147,84 +158,25 @@ class Game {
         mouseWorldPosition[0] -= 3;
         //console.log("Mouse World Position:", mouseWorldPosition);
 
-        // PITCH & YAW
-        // Calculate the difference between spaceship and mouse
-        let verticalDifference = mouseWorldPosition[1] - this.spaceship.model.position[1];
-        let horizontalDifference = mouseWorldPosition[0] - this.spaceship.model.position[0];
-
-        // Determine direction based on relative position to the mouse
-        let pitchDirection = (this.spaceship.model.position[1] > mouseWorldPosition[1]) ? -1 : 1;
-        let yawDirection = (this.spaceship.model.position[0] > mouseWorldPosition[0]) ? 1 : -1;
-        
-
-        // Map this difference to a target angle, adjusted by direction
-        let targetPitchAngle = pitchDirection * Math.atan2(Math.abs(verticalDifference), 2);
-        let targetYawAngle = yawDirection * Math.atan2(Math.abs(horizontalDifference), 2);
-        //console.log("Target Pitch Angle:", targetPitchAngle, "Target Yaw Angle:", targetYawAngle);
-
-        // Clamp the target pitch angle within a maximum range
-        const maxPitchAngle = Math.PI / 3; // 60 degrees in radians
-        const maxYawAngle = Math.PI / 3;
-        targetPitchAngle = Math.max(-maxPitchAngle, Math.min(maxPitchAngle, targetPitchAngle));
-        targetYawAngle = Math.max(-maxYawAngle, Math.min(maxYawAngle, targetYawAngle));
-
-        // Smoothly adjust the spaceship's pitch towards the target pitch
-        if (Math.abs(targetPitchAngle - this.pitchCurrent) > 0.01) { // Threshold to avoid constant minor adjustments
-            let pitchDiff = targetPitchAngle - this.pitchCurrent;
-            this.pitchAngle = pitchDiff * deltaTime * 4; // Adjust the rate of change
-        } else {
-            this.pitchAngle = 0; // Stop adjusting when target pitch is achieved
-        }
-        if (Math.abs(targetYawAngle - this.yawCurrent) > 0.01) { // Threshold to avoid constant minor adjustments
-            let yawDiff = targetYawAngle - this.yawCurrent;
-            this.yawAngle = yawDiff * deltaTime * 4; // Adjust the rate of change
-        } else {
-            this.yawAngle = 0; // Stop adjusting when target pitch is achieved
-        }
-
-        // Update orientation
-        this.pitchCurrent += this.pitchAngle;
-        this.yawCurrent += this.yawAngle;
-
-        // Convert pitch, yaw, and roll to quaternions
-        // let pitchQuaternion = quat.setAxisAngle(quat.create(), [1, 0, 0], this.pitchAngle);
-        // let yawQuaternion = quat.setAxisAngle(quat.create(), [0, 1, 0], this.yawAngle);
-        // let rollQuaternion = quat.setAxisAngle(quat.create(), [0, 0, 1], this.rollAngle);
-        // //console.log("Pitch Quaternion:", pitchQuaternion, "Yaw Quaternion:", yawQuaternion, "Roll Quaternion:", rollQuaternion);
-
-        // // Combine the rotations
-        // quat.multiply(this.spaceship.rotationQuaternion, yawQuaternion, this.spaceship.rotationQuaternion);
-        // quat.multiply(this.spaceship.rotationQuaternion, this.spaceship.rotationQuaternion, pitchQuaternion);
-        // quat.multiply(this.spaceship.rotationQuaternion, this.spaceship.rotationQuaternion, rollQuaternion);
-        // //console.log("Combined Quaternion:", this.spaceship.rotationQuaternion);
-
-        // // Normalize the spaceship's quaternion to avoid numerical drift
-        // quat.normalize(this.spaceship.rotationQuaternion, this.spaceship.rotationQuaternion);
-
-        // // Apply to spaceship's model matrix
-        // mat4.fromQuat(this.spaceship.modelMatrix, this.spaceship.rotationQuaternion);
-        // //console.log("Spaceship Model Matrix:", this.spaceship.modelMatrix);
-
-        // // Normalize the spaceship's quaternion to avoid numerical drift
-        // quat.normalize(this.spaceship.rotationQuaternion, this.spaceship.rotationQuaternion);
-
         //this.spaceship.rotate('y', this.yawAngle); 
         //this.spaceship.rotate('z', this.pitchAngle); // not working anymore :(
-        this.spaceship.rotate('x', this.rollAngle);
-
-        // Debug logs
-        // console.log("Target Pitch", targetPitchAngle);
-        // console.log("Pitch Angle:", this.pitchAngle);
-        // console.log("Pitch Current:", this.pitchCurrent);
+        this.spaceship.rotate('z', this.rollAngle);
     
-        // Scale the move direction by spaceship speed and update the position using RenderObject's translate method
         vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed);
-    
+
+        // if (this.isBoosting && this.currentBoost > 0) {
+        //     vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed * 1.3); // Boosted speed
+        //     this.currentBoost -= this.boostDecayRate;
+        // } else {
+        //     vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed);
+        //     this.currentBoost = Math.min(this.maxBoost, this.currentBoost + this.boostRegenRate);
+        // }
+
         // Define clamping bounds for the spaceship's position
-        const minX = -7; // Minimum X position
-        const maxX = -4; // Maximum X position
+        const minX = -8; // Minimum X position
+        const maxX = 8; // Maximum X position
         const minY = -4; // Minimum Y position
-        const maxY = -1; // Maximum Y position
+        const maxY = 6; // Maximum Y position
     
         // Clamp the spaceship's position within the bounds
         this.spaceship.model.position[0] = Math.min(Math.max(this.spaceship.model.position[0] + moveDirection[0], minX), maxX);
@@ -243,43 +195,11 @@ class Game {
         const normalizedY = -((mousePosition.y / this.canvas.height) * 2 - 1);
     
         // Convert to world coordinates at a fixed Z depth
-        let worldX = normalizedX * 10; // Scale factor for world coordinates
-        let worldY = normalizedY * 10; // Scale factor for world coordinates
-        let worldZ = this.state.camera.position[2] + 10;
+        let worldX = (normalizedX * 10) - 5; // Scale factor for world coordinates
+        let worldY = (normalizedY * 10) + 5; // Scale factor for world coordinates
+        let worldZ = this.state.camera.position[2] + 5;
     
         return vec3.fromValues(worldX, worldY, worldZ);
-    }
-    
-    pointTowardsMouse() {
-        const mouseWorldPosition = this.screenToWorld(this.mousePosition, this.state.camera);
-        const spaceshipPosition = this.spaceship.model.position;
-    
-        let directionToMouse = vec3.subtract(vec3.create(), mouseWorldPosition, spaceshipPosition);
-        vec3.normalize(directionToMouse, directionToMouse);
-    
-        // Ensure it's not a zero vector
-        if (vec3.length(directionToMouse) === 0) {
-            console.error('Direction to mouse is a zero vector');
-            return;
-        }
-    
-        // Assuming the spaceship's forward vector is along the Z-axis
-        const forwardVector = vec3.fromValues(0, 0, 1);
-    
-        // Calculate the quaternion for rotation
-        let rotationQuaternion = quat.create();
-        quat.rotationTo(rotationQuaternion, [0, 0, 1], directionToMouse);
-        quat.normalize(rotationQuaternion, rotationQuaternion);
-
-        // Apply this rotation to the spaceship
-        //this.spaceship.rotateQuaternion(rotationQuaternion);
-
-        // Debugging
-        let testQuaternion = quat.setAxisAngle(quat.create(), [0, 0, 1], Math.PI / 2);
-        this.spaceship.rotateQuaternion(testQuaternion);
-        //console.log("Direction to Mouse:", directionToMouse);
-        //console.log("Rotation Quaternion:", rotationQuaternion);
-        //console.log("Spaceship Model Matrix after Rotation:", this.spaceship.modelMatrix);
     }
 
     // Handle mouse move events to get the current mouse position
@@ -360,6 +280,9 @@ class Game {
             if (['w', 'a', 's', 'd', 'z', 'x', 'q', 'e'].includes(e.key)) { // W A S D
                 this.keyPressed[e.key] = true;
             }
+            if (e.key === 'Shift') {
+                this.isBoosting = true;
+            }
         }
     }
 
@@ -369,6 +292,9 @@ class Game {
         } else {
             if (['w', 'a', 's', 'd', 'z', 'x', 'q', 'e'].includes(e.key)) {
                 this.keyPressed[e.key] = false;
+            }
+            if (e.key === 'Shift') {
+                this.isBoosting = false;
             }
         }
     }
@@ -385,29 +311,7 @@ class Game {
         const far = 100.0;
         this.state.camera.projectionMatrix = mat4.create();
         mat4.perspective(this.state.camera.projectionMatrix, fov, aspect, near, far);
-    
-        // ... other camera setup like setting position, view matrix, etc.
     }
-
-    // spawnField() {
-    //     console.log("Spawning field");
-    //     for (let i = 0; i < 10; i++) {
-    //         for (let j = 0; j < 10; j++) {
-    //             for (let k = 0; k < 10; k++) {
-    //                 spawnObject({
-    //                     name: `new-Object${i}${j}${k}`,
-    //                     model: "Space_Invader.obj",
-    //                     type: "mesh",
-    //                     material: {
-    //                         diffuse: randomVec3(0, 1)
-    //                     },
-    //                     position: vec3.fromValues(-15.5 - i, 5 - j, 20 + k + this.state.camera.position[2]),
-    //                     scale: vec3.fromValues(0.0078125, 0.0078125, 0.015625)
-    //                 }, this.state);
-    //             }
-    //         }
-    //     }
-    // }
 
     getDirectionToMouse(spaceshipPosition, mouseWorldPosition) {
         let direction = vec3.create();
@@ -432,6 +336,25 @@ class Game {
         });
     }
 
+    flashWeaponLight(state) {
+        const weaponLight = state.pointLights.find(light => light.name === "weaponLight");
+        
+        if (weaponLight) {
+            const originalIntensity = weaponLight.intensity;
+            const originalStrength = weaponLight.strength;
+            
+            // Make the weapon light brighter
+            weaponLight.intensity += 1;
+            weaponLight.strength += 3;
+    
+            // Restore the original intensity after 150 milliseconds
+            setTimeout(() => {
+                weaponLight.intensity = originalIntensity;
+                weaponLight.strength = originalStrength;
+            }, 100); // miliseconds
+        }
+    }
+
     spawnCubeOnInterval(e) {
         const rect = this.canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
@@ -444,15 +367,19 @@ class Game {
         // Adjust the mouse world position to align with a point 25 units in front of the ship
         const targetPoint = vec3.clone(spaceship.model.position);
         targetPoint[2] += 25; // Move 25 units in front
-        targetPoint[0] = -mouseWorldPosition[0] - 5; // Align with mouse X
-        targetPoint[1] = mouseWorldPosition[1] - 5; // Align with mouse Y
+        targetPoint[0] = -mouseWorldPosition[0]; // Align with mouse X
+        targetPoint[1] = mouseWorldPosition[1]; // Align with mouse Y
     
         // Calculate the direction from the spaceship to the target point
         let direction = vec3.create();
         vec3.subtract(direction, targetPoint, spaceship.model.position);
         vec3.normalize(direction, direction);
+
+        let spawnPosition = vec3.clone(spaceship.model.position);
+        spawnPosition[2] += 0.9; // Adjust z offset
+        
     
-        this.spawnCube(this.state, spaceship.model.position);
+        this.spawnCube(this.state, spawnPosition);
         this.state.objects[this.state.objects.length - 1].direction = direction;
     }
 
@@ -468,8 +395,8 @@ class Game {
 
     spawnCube(state, spaceshipPosition) {
         // Define the initial properties of the cube
-        const upOffset = 6;
-        const leftOffset = -5.24;
+        const upOffset = -0.5;
+        const leftOffset = 0.24;
         let adjustedPosition = vec3.clone(spaceshipPosition);
         adjustedPosition[0] -= leftOffset; // Move left
         adjustedPosition[1] += upOffset;   // Move up
@@ -483,17 +410,28 @@ class Game {
             },
             position: adjustedPosition,
             scale: vec3.fromValues(0.2, 0.2, 0.2),
-            // Other properties...
         };
-    
-        // Add the cube to the game state and return the newly created cube
-        console.log(`Spawned Cube: ${cubeConfig.name} at Position: ${JSON.stringify(spaceshipPosition)}`);
-        console.log("Ship pos:", this.spaceship.model.position);
-        return addCube(cubeConfig, state);
+
+        // Create a light source associated with the cube
+        const lightConfig = {
+            type: 'point', // For a point light source
+            position: vec3.clone(adjustedPosition),
+            colour: [0, 1, 0], // Adjust color as needed
+            intensity: 100, // Adjust intensity as needed
+            strength: 30,
+        };
+
+        const cube = addCube(cubeConfig, state);
+        this.addLight(lightConfig, state);
+        cube.lightSource = lightConfig;
+
+        this.flashWeaponLight(state);
+
+        return cube;
     }
 
     updateCubes(deltaTime, state) {
-        const cubeSpeed = 10; // Adjust speed as necessary
+        const cubeSpeed = 20;
         state.objects.forEach(object => {
             if (object.type === 'cube') {
                 vec3.scaleAndAdd(
@@ -506,65 +444,112 @@ class Game {
         });
     }
 
-    spawnField() {
-        const fieldDepth = 10;
-        const startZ = this.lastSpawnZ + fieldDepth;
+    addLight(lightConfig, state) {
+        // state.pointLights.push(lightConfig);
+        // console.log("Created light:", lightConfig);
+        // console.log("State Point Lights: ", state.pointLights.length);
     
-        console.log(`Queueing field for spawning at Z: ${startZ}`);
-    
-        for (let k = 0; k < 10; k++) {
-            for (let i = 0; i < 10; i++) {
-                for (let j = 0; j < 10; j++) {
-                    // Construct the object configuration
-                    const objectConfig = {
-                        name: `new-Object${i}${j}${k}-${this.layerCount}`,
-                        model: "Space_Invader.obj",
-                        type: "mesh",
-                        material: {
-                            diffuse: randomVec3(0.66, 1)
-                        },
-                        // Make sure the Z position of the new objects is incremented by the fieldDepth
-                        position: vec3.fromValues(-15.5 - i, 5 - j, startZ + (k * fieldDepth)),
-                        scale: vec3.fromValues(0.0078125, 0.0078125, 0.015625)
-                    };
-    
-                    // Push the object configuration onto the spawn queue
-                    this.spawnQueue.push(objectConfig);
-                }
-            }
-        }
-    
-        // Update the lastSpawnZ to the Z position of the last object in the new field
-        this.lastSpawnZ = startZ + (9 * fieldDepth); // The Z position of the last object in the field
-        this.isSpawning = true;
-        this.layerCount++;
+        // return lightConfig;
     }
-    
 
-    async processSpawnQueue() {
-        if (this.isSpawning && this.spawnQueue.length > 0) {
-            // Determine how many objects to spawn per frame
-            const spawnCountPerFrame = 5;
+    spawnAsteroidField() {
+        // Calculate the number of asteroids to spawn
+        const travelTime = 400 / this.cameraSpeed;
+        const numAsteroids = Math.floor(travelTime / 2) * 1.25;
+
+        for (let i = 0; i < numAsteroids; i++) {
+            // Calculate the Z position for each asteroid
+            const zPos = 200 + (i * (400 / numAsteroids));
+            this.spawnAsteroid(zPos);
+        }
+    }
+
+    spawnAsteroid(zPos) {
+        // Define the range for spawning asteroids (adjust as needed)
+        const xMin = -7; // Adjusted minimum X position
+        const xMax = 12; // Adjusted maximum X position
+        const yMin = -6; // Adjusted minimum Y position
+        const yMax = 7;  // Adjusted maximum Y position
+        const zOffsetAhead = 200; // Distance ahead of the spaceship
+
+        // Randomly choose an asteroid model
+        const asteroidModels = ["asteroid3.obj", "asteroid4.obj", "asteroid5.obj", 
+                                "asteroid6.obj", "asteroid7.obj", "asteroid8.obj", "asteroid9.obj", "asteroid10.obj"];
+        const asteroidModel = asteroidModels[Math.floor(Math.random() * asteroidModels.length)];
+
+        // Random size variation
+        const sizeFactor = 0.1 + Math.random() * 1.2; // Random scale between 0.5 and 2
+
+        // Define the asteroid configuration
+        const asteroidConfig = {
+            name: `Asteroid-${Date.now()}`,
+            model: asteroidModel,
+            type: "mesh",
+            material: {
+                // diffuse: [0.1, 0, 0],
+                // ambient: [0.5, 0.5, 0.5],
+                // specular: [0.5, 0.5, 0.5],
+                // n: 32,
+                // alpha: 1,
+                shaderType: 3
+            },
+            position: vec3.fromValues(
+                Math.random() * (xMax - xMin) + xMin - 20,
+                Math.random() * (yMax - yMin) + yMin + 5,
+                //spaceshipPosition[2] + zOffsetAhead // Z position ahead of the spaceship
+                zPos + zOffsetAhead
+            ),
+            scale: vec3.fromValues(sizeFactor, sizeFactor, sizeFactor),
+            diffuseTexture: "apple.jpg", // apple for testing
+            normalTexture: "DefaultMaterial_normal.png"
+        };
+
+        // Add the asteroid to the game state
+        const newAsteroid = spawnObject(asteroidConfig, this.state);
+        if (newAsteroid && newAsteroid.model) { // Check if the model property exists ?? Doesn't work
+            this.spawnedObjects.push(newAsteroid);
+            this.asteroidPool.push(newAsteroid); // Add to the asteroid pool
+            console.log(this.asteroidPool[0]);
+        }
+    }
+
+    repositionAsteroids() {
+        const xMin = -7; // Adjusted minimum X position
+        const xMax = 12; // Adjusted maximum X position
+        const yMin = -6; // Adjusted minimum Y position
+        const yMax = 7;  // Adjusted maximum Y position
+
+        this.state.objects.forEach((object) => {
+            if (object.name.startsWith('Asteroid-')) {
+                // Check if the asteroid is behind the spaceship
+                if (object.model.position[2] < this.spaceship.model.position[2] - 17.5) {
+                    // Calculate the new Z position, 300 units in front of the spaceship
+                    const newZ = this.spaceship.model.position[2] + 400;
     
-            for (let i = 0; i < spawnCountPerFrame; i++) {
-                if (this.spawnQueue.length > 0) {
-                    const spawnTask = this.spawnQueue.shift();
-                    try {
-                        const object = await spawnObject(spawnTask, this.state);
-                        if (object) {
-                            this.spawnedObjects.push(object); // Add the spawned object to the list
-                        }
-                    } catch (error) {
-                        console.error("Failed to spawn object:", error);
-                    }
-                } else {
-                    this.isSpawning = false;
-                    break;
+                    // Randomly determine new X and Y positions within a specified range
+                    const newX = Math.random() * (xMax - xMin) + xMin - 20;
+                    const newY = Math.random() * (yMax - yMin) + yMin + 5;
+    
+                    // Reposition the asteroid
+                    vec3.set(object.model.position, newX, newY, newZ);
+                    //console.log("Asteroid repositioned: ", object.model.position);
                 }
             }
-        }
-        if (this.spawnQueue.length === 0) {
-            this.isSpawning = false;
+        });
+    }
+
+    updateHealthBar() {
+        const healthPercent = this.playerHealth;
+        const healthBar = document.getElementById('healthBar');
+        healthBar.style.width = `${healthPercent}%`;
+
+        // Change color based on health
+        if (healthPercent < 20) {
+            healthBar.style.backgroundColor = 'red';
+        } else if (healthPercent < 40) {
+            healthBar.style.backgroundColor = 'orange';
+        } else {
+            healthBar.style.backgroundColor = 'green';
         }
     }
 
@@ -625,6 +610,15 @@ class Game {
         }
     }
 
+    cleanupCubes(state) {
+        state.objects = state.objects.filter(object => {
+            if (object.type === 'cube') {
+                // Check if the cube is too far or off-screen and return false to remove it
+            }
+            return true;
+        });
+    }
+
     // runs once on startup after the scene loads the objects
     async onStart() {
         console.log("On start");
@@ -637,7 +631,6 @@ class Game {
         // Setup controls
         this.initializeControls();
         this.initializeMouseInput();
-        
         this.initializeCamera();
 
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
@@ -646,21 +639,6 @@ class Game {
         //     console.log(`This is a custom collision of ${otherObject.name}`)
         // });
         // this.createSphereCollider(otherCube, 0.5);
-
-        // spawn some stuff before the scene starts
-        this.spawnField();
-
-        // for (let i = 0; i < 10; i++) {
-        //     let tempObject = await spawnObject({
-        //         name: `new-Object${i}`,
-        //         type: "cube",
-        //         material: {
-        //             diffuse: randomVec3(0, 1)
-        //         },
-        //         position: vec3.fromValues(4 - i, 0, 0),
-        //         scale: vec3.fromValues(0.5, 0.5, 0.5)
-        //     }, this.state);
-
 
         // tempObject.constantRotate = true; // lets add a flag so we can access it later
         // this.spawnedObjects.push(tempObject); // add these to a spawned objects list
@@ -672,22 +650,30 @@ class Game {
         // }
     }
 
-    cleanupCubes(state) {
-        state.objects = state.objects.filter(object => {
-            if (object.type === 'cube') {
-                // Check if the cube is too far or off-screen and return false to remove it
-            }
-            return true;
-        });
-    }
-
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
         // Move the camera and ship forward by reducing the Z value
         const forwardDistance = this.cameraSpeed * deltaTime;
+
         this.state.camera.position[2] += forwardDistance;
         this.spaceship.model.position[2] += forwardDistance;
         this.plane.model.position[2] += forwardDistance;
+
+        let lightSource = state.pointLights.find(light => light.name === "lightSource");
+        let playerLight = state.pointLights.find(light => light.name === "playerLight");
+        let weaponLight = state.pointLights.find(light => light.name === "weaponLight");
+        if (lightSource) {
+            lightSource.position[2] += forwardDistance;
+            playerLight.position[2] += forwardDistance;
+            weaponLight.position[2] += forwardDistance;
+        }
+
+        // Calculate the position difference between the spaceship and weaponLight
+        const positionDifference = vec3.create();
+        vec3.subtract(positionDifference, this.spaceship.model.position, weaponLight.position);
+
+        // Add the position difference to the weaponLight's position
+        vec3.add(weaponLight.position, weaponLight.position, positionDifference);
 
         // Update the model matrix for the spaceship
         mat4.fromTranslation(this.spaceship.modelMatrix, this.spaceship.model.position);
@@ -711,33 +697,14 @@ class Game {
         if (this.updatePositionStarted) {
             this.updateSpaceshipPosition(deltaTime);
         }
+        
         //this.pointTowardsMouse();
 
         this.updateCubes(deltaTime, state);
-        this.cleanupCubes(state);
 
-        // Update the spaceship orientation based on the current mouse position
-        //const mouseWorldPosition = this.screenToWorld(this.mousePosition);
-        //this.updateSpaceshipOrientation(mouseWorldPosition);
-        //console.log("Mouse World Position:", mouseWorldPosition);
-        
+        this.repositionAsteroids();
 
-        // console.log(`Camera Z Position: ${this.state.camera.position[2]}, Last Spawn Z: ${this.lastSpawnZ}`);
-
-        // Check if it's time to spawn a new field based on the camera's position
-        // if (this.state.camera.position[2] - this.lastSpawnZ >= this.spawnThreshold) {
-        //     this.spawnField();
-        //     // Update lastSpawnZ to the start position of the newly spawned field
-        //     this.lastSpawnZ = this.state.camera.position[2] + this.spawnDistanceAhead;
-        // }
-
-        // Spawn forever
-        // if (!this.isSpawning) {
-        //     this.spawnField();
-        // }
-
-        // Process the spawn queue
-        this.processSpawnQueue().catch(error => console.error("Error processing spawn queue:", error));
+        //this.cleanupCubes(state);
 
         // example: Rotate all objects in the scene marked with a flag
         // this.state.objects.forEach((object) => {
@@ -751,15 +718,36 @@ class Game {
         //     this.spawnedObjects[0].onCollide(this.cube);
         // }
 
-        // example: Rotate all the 'spawned' objects in the scene
-        // this.spawnedObjects.forEach((object) => {
-        //     object.rotate('y', deltaTime * 0.5);
-        // });
+        // Mod projectiles
+        this.state.objects.forEach((object) => {
+            if (object.name.startsWith('Cube-')) {
+                object.rotate('z', Math.random() * 1.5);
 
+            }
+        });
+
+        // Rotate the asteroids
+        this.state.objects.forEach((object) => {
+            if (object.name.startsWith('Asteroid-')) {
+                // Random rotation around each axis
+                object.rotate('x', Math.random() * 0.02);
+                object.rotate('y', Math.random() * 0.02);
+                object.rotate('z', Math.random() * 0.02);
+            }
+        });
+
+        state.pointLights.forEach(light => {
+            // Find the associated cube and update the light's position
+            const associatedCube = state.objects.find(obj => obj.lightSource === light);
+            if (associatedCube) {
+                light.position = vec3.clone(associatedCube.model.position);
+            }
+        });
+    
 
         // example - call our collision check method on our cube
         //this.checkCollision(this.cube);
         // Clean up objects that are behind the camera
-        this.cleanupObjectsBehindCamera();
+        //this.cleanupObjectsBehindCamera();
     }
 }
