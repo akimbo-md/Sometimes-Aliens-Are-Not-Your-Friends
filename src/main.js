@@ -101,7 +101,6 @@ async function main() {
         uniform vec3 diffuseVal;
         uniform vec3 ambientVal;
         uniform vec3 specularVal;
-        uniform float alphaVal;
         uniform float nVal;
         uniform int samplerExists;
         uniform sampler2D uTexture;
@@ -239,8 +238,9 @@ function drawScene(gl, deltaTime, state) {
     gl.clearColor(state.settings.backgroundColor[0], state.settings.backgroundColor[1], state.settings.backgroundColor[2], 1.0); // Here we are drawing the background color that is saved in our state
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
     gl.depthFunc(gl.LEQUAL); // Near things obscure far things
-    gl.disable(gl.CULL_FACE); // Cull the backface of our objects to be more efficient // enable?
+    gl.enable(gl.CULL_FACE); // Cull the backface of our objects to be more efficient // enable?
     gl.cullFace(gl.BACK);
+    gl.enable(gl.BLEND);
     // gl.frontFace(gl.CCW);
     gl.clearDepth(1.0); // Clear everything
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -261,24 +261,6 @@ function drawScene(gl, deltaTime, state) {
     sorted.map((object) => {
         gl.useProgram(object.programInfo.program);
         {
-            if (object.material.alpha < 1.0) {
-                // DONE turn off depth masking
-                // enable blending and specify blending function 
-                gl.depthMask(false);  // turn off depth masking
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.ONE_MINUS_CONSTANT_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                
-            }
-            else {
-                // DONE disable blending 
-                // enable depth masking and z-buffering
-                // specify depth function
-                gl.depthMask(true);  // Added to enable depth masking
-                gl.disable(gl.BLEND);
-                gl.enable(gl.DEPTH_TEST);  // Added to enable depth testing
-                gl.depthFunc(gl.LESS);  // Added to specify depth function
-            }
             // Projection Matrix ....
             let projectionMatrix = mat4.create();
             let fovy = 90.0 * Math.PI / 180.0; // Vertical field of view in radians
@@ -335,7 +317,6 @@ function drawScene(gl, deltaTime, state) {
             gl.uniform3fv(object.programInfo.uniformLocations.ambientVal, object.material.ambient);
             gl.uniform3fv(object.programInfo.uniformLocations.specularVal, object.material.specular);
             gl.uniform1f(object.programInfo.uniformLocations.nVal, object.material.n);
-            //gl.uniform1f(object.programInfo.uniformLocations.alphaValue, object.material.alpha); //alpha is buggy for now
 
             // Lights
             // let mainLight = state.pointLights[0];

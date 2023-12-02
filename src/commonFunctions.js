@@ -453,3 +453,12 @@ async function addMesh(object, vertShader = null, fragShader = null) {
         return created;
     }
 }
+
+function angleBetweenVectors(v1, v2) {
+    let dot = vec3.dot(v1, v2);
+    let lenProd = vec3.length(v1) * vec3.length(v2);
+    let div = dot / lenProd;
+    // Clamp the division result to avoid NaN due to floating point precision issues
+    div = Math.max(-1, Math.min(1, div));
+    return Math.acos(div); // Return angle in radians
+}

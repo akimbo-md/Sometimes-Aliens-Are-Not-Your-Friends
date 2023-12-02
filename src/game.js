@@ -6,8 +6,13 @@ class Game {
         this.plane = getObject(state, "tempPlane");
         this.light = getObject(state, "lightSource");
 
+        console.log('Camera Position:', this.state.camera.position);
+        console.log('Camera lookat:', this.state.camera.front);
+        console.log('Camera Up:', this.state.camera.up);
+
         this.controlCamera = false;
         this.cameraSpeed = 10;
+        this.isFirstPersonCamera = false;
 
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.mouseDownPosition = { x: 0, y: 0 };
@@ -34,25 +39,25 @@ class Game {
         };
 
         this.spaceship = getObject(state, "SpaceShip");
-        //this.spaceship.offset = { x: 3, y: 2, z: 0 };
         this.spaceshipSpeed = 0.7;
+        this.spaceshipVelocity = { x: 0, y: 0 }; // Track spaceship's velocity
         this.spaceshipSpawnDelay = 2;
         this.spaceshipSpawned = false;
         this.cubeSpawnInterval = null; // Store the interval ID
         this.cubeSpawnRate = 200; // Time in milliseconds between cube spawns
 
+        this.enemy1 = getObject(state, "Enemy1");
+
         this.asteroidPool = [];
-        this.spawnAsteroidField();
+        //this.spawnAsteroidField();
 
         this.rollAngle = 0; // Current roll angle
         this.currentRoll = 0;
         this.maxRollAngle = Math.PI / 6; // Maximum roll angle for full roll
         this.rollSpeed = 0.0003; // Speed at which the ship rolls
         this.rollReturnSpeed = 0.00004; // Speed at which the ship returns to no roll
-        this.pitchAngle = 0;
-        this.pitchCurrent = 0;
-        this.yawAngle = 0;
-        this.yawCurrent = 0;
+        this.shipUp = vec3.fromValues(0, 1, 0); // Up vector for the ship
+        this.spaceshipTotalRotation = 0;
         this.isShipPointedAtMouse = false;
         this.updatePositionDelay = 2; // Delay in seconds
         this.updatePositionStarted = false;
@@ -81,65 +86,179 @@ class Game {
         console.log(`Controls toggled. Camera control is now ${this.controlCamera ? 'on' : 'off'}.`);
     }
 
-    updateCameraPosition(directionVector) {
-        // Update the camera's position based on the direction vector
-        vec3.scaleAndAdd(
-            this.state.camera.position,
-            this.state.camera.position,
-            directionVector,
-            this.cameraSpeed
-        );
+    updateCameraPosition() {
+        // Calculate direction vectors
+        let forward = vec3.clone(this.state.camera.front);
+        let right = vec3.create();
+        vec3.cross(right, this.state.camera.up, forward);
+        vec3.normalize(right, right);
 
-        // Update the view matrix since the camera's position has changed
+        let movementDirection = vec3.create();
+
+        // Combine directions based on key states
+        if (this.keyPressed.w) vec3.add(movementDirection, movementDirection, forward);
+        if (this.keyPressed.s) vec3.subtract(movementDirection, movementDirection, forward);
+        if (this.keyPressed.a) vec3.add(movementDirection, movementDirection, right);
+        if (this.keyPressed.d) vec3.subtract(movementDirection, movementDirection, right);
+        if (this.keyPressed.z) vec3.add(movementDirection, movementDirection, this.state.camera.up);
+        if (this.keyPressed.x) vec3.subtract(movementDirection, movementDirection, this.state.camera.up);
+
+        vec3.scale(movementDirection, movementDirection, 0.1);
+
+        // Update the camera's position
+        vec3.add(this.state.camera.position, this.state.camera.position, movementDirection);
+
+        // Update the view matrix
         mat4.lookAt(
             this.state.camera.viewMatrix,
             this.state.camera.position,
-            this.state.camera.target,
+            vec3.add(vec3.create(), this.state.camera.position, this.state.camera.front),
             this.state.camera.up
-        );d
+        );
     }
 
-    angleBetweenVectors(v1, v2) {
-        let dot = vec3.dot(v1, v2);
-        let lenProd = vec3.length(v1) * vec3.length(v2);
-        let div = dot / lenProd;
-        // Clamp the division result to avoid NaN due to floating point precision issues
-        div = Math.max(-1, Math.min(1, div));
-        return Math.acos(div); // Return angle in radians
+    updateFirstPersonCamera() {
+        // Constant z-offset
+        const zOffset = -3;
+    
+        // Calculate the dynamic offset based on the ship's up vector
+        let dynamicOffset = vec3.create();
+        vec3.scale(dynamicOffset, this.shipUp, 1); // Scale the ship's up vector by 1 unit
+        dynamicOffset[2] = zOffset; // Set the z component to the constant offset
+    
+        // Add the dynamic offset to the spaceship's position for the camera's world position
+        let cameraWorldPosition = vec3.create();
+        vec3.add(cameraWorldPosition, this.spaceship.model.position, dynamicOffset);
+        this.state.camera.position = cameraWorldPosition;
+    
+        this.state.camera.front = vec3.fromValues(0, 0, 1);
+        this.state.camera.up = vec3.clone(this.shipUp);
+    
+        // Update the camera view matrix
+        mat4.lookAt(
+            this.state.camera.viewMatrix,
+            this.state.camera.position,
+            vec3.add(vec3.create(), this.state.camera.position, this.state.camera.front),
+            this.state.camera.up
+        );
+    }
+
+    resetCamera() {
+        // Reset the position with the current z-position of the spaceship
+        const zPosition = this.spaceship.model.position[2];
+        this.state.camera.position = vec3.fromValues(0, 5, zPosition - 7);
+
+        // Reset the up vector
+        this.state.camera.up = vec3.fromValues(0, 1, 0);
+
+        // Reset the lookat
+        this.state.camera.front = vec3.fromValues(-0.01313674737364058, -0.33873793690267073, 0.9407890496659511) // Original values
+
+        // Update the view matrix to reflect these changes
+        mat4.lookAt(
+            this.state.camera.viewMatrix,
+            this.state.camera.position,
+            vec3.add(vec3.create(), this.state.camera.position, this.state.camera.front),
+            this.state.camera.up
+        );
+    }
+
+    rotateCamera(angle) {
+        // Create a rotation matrix around the Y-axis
+        let rotationMatrix = mat4.create();
+        mat4.rotateY(rotationMatrix, rotationMatrix, angle);
+    
+        // Apply the rotation to the camera's front vector
+        let rotatedFront = vec3.create();
+        vec3.transformMat4(rotatedFront, this.state.camera.front, rotationMatrix);
+        this.state.camera.front = rotatedFront;
+    
+        // Update the view matrix
+        mat4.lookAt(
+            this.state.camera.viewMatrix,
+            this.state.camera.position,
+            vec3.add(vec3.create(), this.state.camera.position, this.state.camera.front),
+            this.state.camera.up
+        );
     }
 
     updateSpaceshipPosition(deltaTime) {
         let moveDirection = vec3.create();
     
-        // Adjust the direction and target roll angle based on the keys pressed
-        if (this.keyPressed.w) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, 0.035, 0)); // Move up gradually
-        if (this.keyPressed.s) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, -0.035, 0)); // Move down gradually
-        if (this.keyPressed.d) {
-            vec3.add(moveDirection, moveDirection, vec3.fromValues(-0.035, 0, 0)); // Move left gradually
-            this.targetRollAngle = -this.maxRollAngle;
-        } 
-        if (this.keyPressed.a) {
-            vec3.add(moveDirection, moveDirection, vec3.fromValues(0.035, 0, 0)); // Move right gradually
-            this.targetRollAngle = this.maxRollAngle;
+        // Movement keys
+        const movementIncrement = 0.003;
+        if (this.isFirstPersonCamera) { // For first person mode
+            // Calculate the direction vectors based on the ship's up vector
+            let forward = vec3.fromValues(0, 0, 1);
+            let right = vec3.create();
+            vec3.cross(right, this.shipUp, forward);
+            vec3.normalize(right, right);
+
+            if (this.keyPressed.w) {
+                vec3.add(moveDirection, moveDirection, this.shipUp);
+            } 
+            if (this.keyPressed.s) {
+                vec3.subtract(moveDirection, moveDirection, this.shipUp);
+            }
+            if (this.keyPressed.a) {
+                vec3.add(moveDirection, moveDirection, right);
+                this.targetRollAngle = this.maxRollAngle;
+            }
+            if (this.keyPressed.d) {
+                vec3.subtract(moveDirection, moveDirection, right);
+                this.targetRollAngle = -this.maxRollAngle;
+            }
+
+            // Apply the movement
+            vec3.scale(moveDirection, moveDirection, movementIncrement);
+            this.spaceshipVelocity.x += moveDirection[0];
+            this.spaceshipVelocity.y += moveDirection[1];
+        } else {
+            if (this.keyPressed.w) {
+                this.spaceshipVelocity.y += movementIncrement;
+            } 
+            if (this.keyPressed.s) {
+                this.spaceshipVelocity.y -= movementIncrement;
+            }
+            if (this.keyPressed.a) {
+                this.spaceshipVelocity.x += movementIncrement;
+                this.targetRollAngle = this.maxRollAngle;
+            } 
+            if (this.keyPressed.d) {
+                this.spaceshipVelocity.x -= movementIncrement;
+                this.targetRollAngle = -this.maxRollAngle;
+            }
         }
         if (this.keyPressed.q) {
-            //this.rollAngle -= this.rollSpeed * deltaTime;
             this.targetRollAngle = this.maxRollAngle;
         }
         if (this.keyPressed.e) {
-            //this.rollAngle += this.rollSpeed * deltaTime;
             this.targetRollAngle = -this.maxRollAngle;
         }
-
+        
         // Clamp the currentRollAngle to prevent excessive rolling
         this.currentRollAngle = Math.max(-this.maxRollAngle, Math.min(this.maxRollAngle, this.currentRollAngle));
-        this.rollAngle = Math.max(-this.maxRollAngle, Math.min(this.maxRollAngle, this.rollAngle));
-    
+        if (this.isFirstPersonCamera) {
+            this.rollAngle = Math.max(-0.03, Math.min(0.03, this.rollAngle));
+        } else {
+            this.rollAngle = Math.max(-0.1, Math.min(0.1, this.rollAngle));
+        }
+
         // Gradually adjust the roll angle towards the target roll angle
-        if (this.rollAngle < this.targetRollAngle) {
-            this.rollAngle = Math.min(this.rollAngle + this.rollSpeed, this.targetRollAngle);
-        } else if (this.rollAngle > this.targetRollAngle) {
-            this.rollAngle = Math.max(this.rollAngle - this.rollSpeed, this.targetRollAngle);
+        if (this.isFirstPersonCamera && (this.keyPressed.a || this.keyPressed.d)) {  // Slower roll speed in first person A and D keys
+            const firstPersonRollSpeed = this.rollSpeed / 6;
+            if (this.rollAngle < this.targetRollAngle) {
+                this.rollAngle = Math.min(this.rollAngle + firstPersonRollSpeed, this.targetRollAngle);
+            } else if (this.rollAngle > this.targetRollAngle) {
+                this.rollAngle = Math.max(this.rollAngle - firstPersonRollSpeed, this.targetRollAngle);
+            }
+        } else {
+            // Original logic for outside first-person mode
+            if (this.rollAngle < this.targetRollAngle) {
+                this.rollAngle = Math.min(this.rollAngle + this.rollSpeed, this.targetRollAngle);
+            } else if (this.rollAngle > this.targetRollAngle) {
+                this.rollAngle = Math.max(this.rollAngle - this.rollSpeed, this.targetRollAngle);
+            }
         }
     
         // Gradually return the roll angle to zero when no left/right movement
@@ -152,18 +271,83 @@ class Game {
             this.targetRollAngle = 0; // Reset target roll angle
         }
 
-        // Calculate the mouse world position
-        const mouseWorldPosition = this.screenToWorld(this.mousePosition, this.state.camera);
-        mouseWorldPosition[1] -= 3; // y Axis offset
-        mouseWorldPosition[0] -= 3;
-        //console.log("Mouse World Position:", mouseWorldPosition);
-
-        //this.spaceship.rotate('y', this.yawAngle); 
-        //this.spaceship.rotate('z', this.pitchAngle); // not working anymore :(
+        // Apply rotation
         this.spaceship.rotate('z', this.rollAngle);
-    
+
+        // Update the total rotation of the spaceship
+        const scaleFactor = 180 / 1.5; // Calibrated to match the actual rotation
+        this.spaceshipTotalRotation += (this.rollAngle * deltaTime) * scaleFactor;
+        this.spaceshipTotalRotation = (this.spaceshipTotalRotation + 2 * Math.PI) % (2 * Math.PI); // Normalize the total rotation
+
+        // Calculate the up vector components based on the scaled rotation
+        let upVectorX = Math.cos(this.spaceshipTotalRotation - Math.PI / 2);
+        let upVectorY = -Math.sin(this.spaceshipTotalRotation - Math.PI / 2);
+
+        // Normalize the up vector
+        const length = Math.sqrt(upVectorX * upVectorX + upVectorY * upVectorY);
+        upVectorX /= length;
+        upVectorY /= length;
+
+        // Set the up vector for the spaceship
+        this.shipUp = vec3.fromValues(upVectorX, upVectorY, 0);
+
+        // Limit the spaceship's velocity
+        const spaceshipVelocityMaximum = 0.1;
+        this.spaceshipVelocity.x = Math.max(-spaceshipVelocityMaximum, Math.min(spaceshipVelocityMaximum, this.spaceshipVelocity.x));
+        this.spaceshipVelocity.y = Math.max(-spaceshipVelocityMaximum, Math.min(spaceshipVelocityMaximum, this.spaceshipVelocity.y));
+
+        // Apply deceleration when movement keys are not pressed
+        const decelerationFactor = 0.99; // More pronounced deceleration
+        if (!this.keyPressed.w && !this.keyPressed.s) {
+            this.spaceshipVelocity.y *= decelerationFactor;
+        }
+        if (!this.keyPressed.a && !this.keyPressed.d) {
+            this.spaceshipVelocity.x *= decelerationFactor;
+        }
+
+        // Define clamping bounds with a slight overstep allowance
+        const minX = -7, maxX = 7, minY = -3, maxY = 5;
+
+        // Update spaceship's position based on its velocity
+        let newX = this.spaceship.model.position[0] + this.spaceshipVelocity.x;
+        let newY = this.spaceship.model.position[1] + this.spaceshipVelocity.y;
         vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed);
 
+        // Check if spaceship is out of bounds and adjust position accordingly
+        let outOfBoundsX = newX < minX || newX > maxX;
+        let outOfBoundsY = newY < minY || newY > maxY;
+
+        const maxReturnSpeed = 0.06; // Maximum speed for returning to bounds
+        const overstepMargin = 0.2; // Allow some overstepping
+        const returnAcceleration = 0.002; // Acceleration when returning to bounds
+
+        if (outOfBoundsX) {
+            let boundaryX = newX < minX ? minX : maxX;
+            let distanceX = Math.abs(newX - boundaryX) - overstepMargin;
+            let directionX = newX < minX ? 1 : -1;
+            this.spaceshipVelocity.x += directionX * Math.max(0, distanceX) * returnAcceleration;
+            this.spaceshipVelocity.x = Math.min(maxReturnSpeed, Math.max(-maxReturnSpeed, this.spaceshipVelocity.x));
+            newX += this.spaceshipVelocity.x;
+        } else {
+            this.spaceshipVelocity.x *= decelerationFactor;
+        }
+
+        if (outOfBoundsY) {
+            let boundaryY = newY < minY ? minY : maxY;
+            let distanceY = Math.abs(newY - boundaryY) - overstepMargin;
+            let directionY = newY < minY ? 1 : -1;
+            this.spaceshipVelocity.y += directionY * Math.max(0, distanceY) * returnAcceleration;
+            this.spaceshipVelocity.y = Math.min(maxReturnSpeed, Math.max(-maxReturnSpeed, this.spaceshipVelocity.y));
+            newY += this.spaceshipVelocity.y;
+        } else {
+            this.spaceshipVelocity.y *= decelerationFactor;
+        }
+
+        // Allow slight overstep before clamping
+        this.spaceship.model.position[0] = Math.max(minX - overstepMargin, Math.min(maxX + overstepMargin, newX));
+        this.spaceship.model.position[1] = Math.max(minY - overstepMargin, Math.min(maxY + overstepMargin, newY));
+
+        // Apply boosting
         // if (this.isBoosting && this.currentBoost > 0) {
         //     vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed * 1.3); // Boosted speed
         //     this.currentBoost -= this.boostDecayRate;
@@ -171,21 +355,11 @@ class Game {
         //     vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed);
         //     this.currentBoost = Math.min(this.maxBoost, this.currentBoost + this.boostRegenRate);
         // }
-
-        // Define clamping bounds for the spaceship's position
-        const minX = -8; // Minimum X position
-        const maxX = 8; // Maximum X position
-        const minY = -4; // Minimum Y position
-        const maxY = 6; // Maximum Y position
-    
-        // Clamp the spaceship's position within the bounds
-        this.spaceship.model.position[0] = Math.min(Math.max(this.spaceship.model.position[0] + moveDirection[0], minX), maxX);
-        this.spaceship.model.position[1] = Math.min(Math.max(this.spaceship.model.position[1] + moveDirection[1], minY), maxY);
     
         // Translate the position of the spaceship
         this.spaceship.translate(vec3.fromValues(
-            this.spaceship.model.position[0] - this.spaceship.model.position[0],
-            this.spaceship.model.position[1] - this.spaceship.model.position[1],
+            newX - this.spaceship.model.position[0],
+            newY - this.spaceship.model.position[1],
             0
         ));
     }
@@ -209,7 +383,6 @@ class Game {
         this.mousePosition.y = e.clientY - rect.top;
     
         const mouseWorldPosition = this.screenToWorld(this.mousePosition);
-        this.updateSpaceshipPosition(mouseWorldPosition);
         if (this.isMousePressed) {
             this.updateFiringDirection();
         }
@@ -251,44 +424,40 @@ class Game {
             this.toggleControls();
         } else if (this.controlCamera) {
             // Camera control logic
-            let directionVector;
-            switch (e.key) {
-                case 'w':
-                    directionVector = vec3.fromValues(0, 0, -1); // Move forward
-                    break;
-                case 'a':
-                    directionVector = vec3.fromValues(-1, 0, 0); // Move left
-                    break;
-                case 's':
-                    directionVector = vec3.fromValues(0, 0, 1); // Move backward
-                    break;
-                case 'd':
-                    directionVector = vec3.fromValues(1, 0, 0); // Move right
-                    break;
-                case 'z':
-                    directionVector = vec3.fromValues(0, 1, 0); // Move up
-                    break;
-                case 'x':
-                    directionVector = vec3.fromValues(0, -1, 0); // Move down
-                    break;
+            if (['w', 'a', 's', 'd', 'z', 'x'].includes(e.key)) {
+                this.keyPressed[e.key] = true;
             }
-            if (directionVector) {
-                this.updateCameraPosition(directionVector);
+            switch (e.key) {
+                case 'q':
+                    // Rotate the camera left
+                    this.rotateCamera(0.02);
+                    break;
+                case 'e':
+                    // Rotate the camera right
+                    this.rotateCamera(-0.02);
+                    break;
             }
         } else {
             // Spaceship control logic
-            if (['w', 'a', 's', 'd', 'z', 'x', 'q', 'e'].includes(e.key)) { // W A S D
+            if (['w', 'a', 's', 'd', 'z', 'x', 'q', 'e'].includes(e.key)) {
                 this.keyPressed[e.key] = true;
             }
             if (e.key === 'Shift') {
                 this.isBoosting = true;
+            }
+            if (e.key === 'v') {
+                this.isFirstPersonCamera = !this.isFirstPersonCamera;
+                console.log(`First-person camera mode is now ${this.isFirstPersonCamera ? 'on' : 'off'}.`);
+                if (!this.isFirstPersonCamera) {
+                    this.resetCamera(); // Reset camera when exiting first-person mode
+                }
             }
         }
     }
 
     handleKeyRelease(e) {
         if (this.controlCamera) {
-            // ...
+            this.keyPressed[e.key] = false;
         } else {
             if (['w', 'a', 's', 'd', 'z', 'x', 'q', 'e'].includes(e.key)) {
                 this.keyPressed[e.key] = false;
@@ -340,14 +509,14 @@ class Game {
         const weaponLight = state.pointLights.find(light => light.name === "weaponLight");
         
         if (weaponLight) {
-            const originalIntensity = weaponLight.intensity;
-            const originalStrength = weaponLight.strength;
+            const originalIntensity = 0.001;
+            const originalStrength = 0.01;
             
             // Make the weapon light brighter
             weaponLight.intensity += 1;
             weaponLight.strength += 3;
     
-            // Restore the original intensity after 150 milliseconds
+            // Restore the original strength/intensity
             setTimeout(() => {
                 weaponLight.intensity = originalIntensity;
                 weaponLight.strength = originalStrength;
@@ -377,7 +546,6 @@ class Game {
 
         let spawnPosition = vec3.clone(spaceship.model.position);
         spawnPosition[2] += 0.9; // Adjust z offset
-        
     
         this.spawnCube(this.state, spawnPosition);
         this.state.objects[this.state.objects.length - 1].direction = direction;
@@ -414,10 +582,10 @@ class Game {
 
         // Create a light source associated with the cube
         const lightConfig = {
-            type: 'point', // For a point light source
+            type: 'pointLights',
             position: vec3.clone(adjustedPosition),
-            colour: [0, 1, 0], // Adjust color as needed
-            intensity: 100, // Adjust intensity as needed
+            colour: [0, 1, 0],
+            intensity: 100,
             strength: 30,
         };
 
@@ -659,6 +827,8 @@ class Game {
         this.spaceship.model.position[2] += forwardDistance;
         this.plane.model.position[2] += forwardDistance;
 
+        this.enemy1.model.position[2] += forwardDistance;
+
         let lightSource = state.pointLights.find(light => light.name === "lightSource");
         let playerLight = state.pointLights.find(light => light.name === "playerLight");
         let weaponLight = state.pointLights.find(light => light.name === "weaponLight");
@@ -693,12 +863,18 @@ class Game {
                 this.updatePositionStarted = true;
             }
         }
+
+        if (this.isFirstPersonCamera) {
+            this.updateFirstPersonCamera();
+        }
+
+        if (this.controlCamera) {
+            this.updateCameraPosition();
+        }
     
         if (this.updatePositionStarted) {
             this.updateSpaceshipPosition(deltaTime);
         }
-        
-        //this.pointTowardsMouse();
 
         this.updateCubes(deltaTime, state);
 
@@ -722,7 +898,6 @@ class Game {
         this.state.objects.forEach((object) => {
             if (object.name.startsWith('Cube-')) {
                 object.rotate('z', Math.random() * 1.5);
-
             }
         });
 
