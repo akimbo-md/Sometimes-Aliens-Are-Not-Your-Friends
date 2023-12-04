@@ -21,6 +21,7 @@ class Game {
             y: 0
         };
         this.isMousePressed = false;
+        this.isFirstPersonCamera = false;
 
         this.keyPressed = {
             w: false,
@@ -42,7 +43,7 @@ class Game {
         this.cubeSpawnRate = 200; // Time in milliseconds between cube spawns
 
         this.asteroidPool = [];
-        this.spawnAsteroidField();
+        // this.spawnAsteroidField();
 
         this.rollAngle = 0; // Current roll angle
         this.currentRoll = 0;
@@ -66,6 +67,7 @@ class Game {
         this.boostDecayRate = 1;
         this.boostRegenRate = 0.5;
         
+        this.frame = 0;
         this.spawnedObjects = [];
         this.collidableObjects = [];
         this.lastSpawnZ = 0;
@@ -112,14 +114,14 @@ class Game {
         let moveDirection = vec3.create();
     
         // Adjust the direction and target roll angle based on the keys pressed
-        if (this.keyPressed.w) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, 0.035, 0)); // Move up gradually
-        if (this.keyPressed.s) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, -0.035, 0)); // Move down gradually
+        if (this.keyPressed.w) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, 0.08, 0)); // Move up gradually
+        if (this.keyPressed.s) vec3.add(moveDirection, moveDirection, vec3.fromValues(0, -0.08, 0)); // Move down gradually
         if (this.keyPressed.d) {
-            vec3.add(moveDirection, moveDirection, vec3.fromValues(-0.035, 0, 0)); // Move left gradually
+            vec3.add(moveDirection, moveDirection, vec3.fromValues(-0.08, 0, 0)); // Move left gradually
             this.targetRollAngle = -this.maxRollAngle;
         } 
         if (this.keyPressed.a) {
-            vec3.add(moveDirection, moveDirection, vec3.fromValues(0.035, 0, 0)); // Move right gradually
+            vec3.add(moveDirection, moveDirection, vec3.fromValues(0.08, 0, 0)); // Move right gradually
             this.targetRollAngle = this.maxRollAngle;
         }
         if (this.keyPressed.q) {
@@ -357,23 +359,15 @@ class Game {
 
     spawnCubeOnInterval(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const mousePosition = { x: mouseX, y: mouseY };
     
         const spaceship = getObject(this.state, "SpaceShip");
-        const mouseWorldPosition = this.screenToWorld(mousePosition);
         
         // Adjust the mouse world position to align with a point 25 units in front of the ship
-        const targetPoint = vec3.clone(spaceship.model.position);
-        targetPoint[2] += 25; // Move 25 units in front
-        targetPoint[0] = -mouseWorldPosition[0]; // Align with mouse X
-        targetPoint[1] = mouseWorldPosition[1]; // Align with mouse Y
     
         // Calculate the direction from the spaceship to the target point
         let direction = vec3.create();
-        vec3.subtract(direction, targetPoint, spaceship.model.position);
-        vec3.normalize(direction, direction);
+        direction[2] = 1;
+
 
         let spawnPosition = vec3.clone(spaceship.model.position);
         spawnPosition[2] += 0.9; // Adjust z offset
@@ -459,7 +453,7 @@ class Game {
 
         for (let i = 0; i < numAsteroids; i++) {
             // Calculate the Z position for each asteroid
-            const zPos = 200 + (i * (400 / numAsteroids));
+            const zPos = 100 + (i * (400 / numAsteroids));
             this.spawnAsteroid(zPos);
         }
     }
@@ -470,7 +464,7 @@ class Game {
         const xMax = 12; // Adjusted maximum X position
         const yMin = -6; // Adjusted minimum Y position
         const yMax = 7;  // Adjusted maximum Y position
-        const zOffsetAhead = 200; // Distance ahead of the spaceship
+         // Distance ahead of the spaceship
 
         // Randomly choose an asteroid model
         const asteroidModels = ["asteroid3.obj", "asteroid4.obj", "asteroid5.obj", 
@@ -497,7 +491,7 @@ class Game {
                 Math.random() * (xMax - xMin) + xMin - 20,
                 Math.random() * (yMax - yMin) + yMin + 5,
                 //spaceshipPosition[2] + zOffsetAhead // Z position ahead of the spaceship
-                zPos + zOffsetAhead
+                zPos
             ),
             scale: vec3.fromValues(sizeFactor, sizeFactor, sizeFactor),
             diffuseTexture: "apple.jpg", // apple for testing
@@ -514,10 +508,10 @@ class Game {
     }
 
     repositionAsteroids() {
-        const xMin = -7; // Adjusted minimum X position
-        const xMax = 12; // Adjusted maximum X position
-        const yMin = -6; // Adjusted minimum Y position
-        const yMax = 7;  // Adjusted maximum Y position
+        const xMin = 0; // Adjusted minimum X position
+        const xMax = 0; // Adjusted maximum X position
+        const yMin = 0; // Adjusted minimum Y position
+        const yMax = 0;  // Adjusted maximum Y position
 
         this.state.objects.forEach((object) => {
             if (object.name.startsWith('Asteroid-')) {
@@ -527,8 +521,8 @@ class Game {
                     const newZ = this.spaceship.model.position[2] + 400;
     
                     // Randomly determine new X and Y positions within a specified range
-                    const newX = Math.random() * (xMax - xMin) + xMin - 20;
-                    const newY = Math.random() * (yMax - yMin) + yMin + 5;
+                    const newX = Math.random() * (xMax - xMin) + xMin;
+                    const newY = Math.random() * (yMax - yMin) + yMin;
     
                     // Reposition the asteroid
                     vec3.set(object.model.position, newX, newY, newZ);
@@ -619,6 +613,17 @@ class Game {
         });
     }
 
+    is_between(A, B, distance){
+        var min = B - distance;
+        var max = B + distance;
+
+        if( A > min && A < max){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     // runs once on startup after the scene loads the objects
     async onStart() {
         console.log("On start");
@@ -633,6 +638,7 @@ class Game {
         this.initializeMouseInput();
         this.initializeCamera();
 
+        this.spawnAsteroidField();
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
         // no collision can happen
         // this.createSphereCollider(this.cube, 0.5, (otherObject) => {
@@ -725,6 +731,16 @@ class Game {
 
             }
         });
+        
+        var shipX = this.spaceship.model.position[0];
+        var shipY = this.spaceship.model.position[1];
+        var shipZ = this.spaceship.model.position[2];
+
+        
+        if(this.frame % 100 == 0){
+            console.log("SPACESHIP POSITION " + shipX+ "   "+shipY + "   " + shipZ);
+        }
+        this.frame++;
 
         // Rotate the asteroids
         this.state.objects.forEach((object) => {
@@ -733,6 +749,19 @@ class Game {
                 object.rotate('x', Math.random() * 0.02);
                 object.rotate('y', Math.random() * 0.02);
                 object.rotate('z', Math.random() * 0.02);
+                
+                if (this.frame % 100 == 0){
+                    console.log("ASTEROID POS " +  object.model.position[0] + "  "+ object.model.position[1] + "   " + object.model.position[2] )
+                }
+                
+
+                //console.log(object.model.position[0]);
+                
+                if ( this.is_between(this.spaceship.model.position[0], object.model.position[0], 1) &&  this.is_between(this.spaceship.model.position[1], object.model.position[1], 1) &&  this.is_between(this.spaceship.model.position[2], object.model.position[2], 1) ){
+                    console.log("PLAYER HIT!");
+                    this.playerHealth -= 30;
+                }
+
             }
         });
 
@@ -743,11 +772,19 @@ class Game {
                 light.position = vec3.clone(associatedCube.model.position);
             }
         });
-    
+        
+        /*
+        console.log(this.frame);
+        if (this.frame % 100 == 0){
+            this.spawnAsteroid(50);
+        }
+        this.frame++; 
+        
 
         // example - call our collision check method on our cube
         //this.checkCollision(this.cube);
         // Clean up objects that are behind the camera
         //this.cleanupObjectsBehindCamera();
+        */
     }
 }
