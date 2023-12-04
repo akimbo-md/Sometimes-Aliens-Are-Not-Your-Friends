@@ -6,9 +6,10 @@ class Game {
         this.plane = getObject(state, "tempPlane");
         this.light = getObject(state, "lightSource");
 
-        console.log('Camera Position:', this.state.camera.position);
-        console.log('Camera lookat:', this.state.camera.front);
-        console.log('Camera Up:', this.state.camera.up);
+        this.lightSource = state.pointLights.find(light => light.name === "lightSource");
+        this.playerLight = state.pointLights.find(light => light.name === "playerLight");
+        this.weaponLight = state.pointLights.find(light => light.name === "weaponLight");
+        this.enemy1light = state.pointLights.find(light => light.name === "Enemy1Light");
 
         this.controlCamera = false;
         this.cameraSpeed = 10;
@@ -45,8 +46,26 @@ class Game {
         this.spaceshipSpawned = false;
         this.cubeSpawnInterval = null; // Store the interval ID
         this.cubeSpawnRate = 200; // Time in milliseconds between cube spawns
+        this.cubeSpeed = 35;
+        this.shootingCurve = 2; // How much the player can change projectile trajectory
 
         this.enemy1 = getObject(state, "Enemy1");
+        this.enemy1.xMovementFactor = 1;
+        this.enemy1.yMovementFactor = 1;
+        this.enemy1.zMovementFactor = 1;
+        this.enemy1Velocity = [];
+        this.enemyIsAttacking = false;
+        this.enemyAttackIntervalSet = false;
+        this.enemyFireRate = 350;
+        // this.enemy2 = getObject(state, "Enemy2");
+        // this.enemy3 = getObject(state, "Enemy3");
+        // this.enemy4 = getObject(state, "Enemy4");
+        // this.enemy5 = getObject(state, "Enemy5");
+        // this.enemy6 = getObject(state, "Enemy6");
+        // this.enemy7 = getObject(state, "Enemy7");
+        // this.enemy8 = getObject(state, "Enemy8");
+        // this.enemy9 = getObject(state, "Enemy9");
+        // this.enemy10 = getObject(state, "Enemy10");
 
         this.asteroidPool = [];
         //this.spawnAsteroidField();
@@ -79,6 +98,12 @@ class Game {
         this.isSpawning = false; // Flag to indicate if we're currently spawning
         this.spawnThreshold = 20; // Adjust as needed based on camera speed
         this.spawnDistanceAhead = 20; // How far ahead to spawn the new field
+    }
+
+    initializeMouseInput() {
+        document.addEventListener("mousemove", (e) => this.handleMouseMove(e));
+        document.addEventListener("mousedown", (e) => this.handleMouseDown(e));
+        document.addEventListener("mouseup", (e) => this.handleMouseUp(e));
     }
 
     toggleControls() {
@@ -182,6 +207,7 @@ class Game {
         );
     }
 
+    // Movement involved with the player's ship
     updateSpaceshipPosition(deltaTime) {
         let moveDirection = vec3.create();
     
@@ -239,7 +265,7 @@ class Game {
         // Clamp the currentRollAngle to prevent excessive rolling
         this.currentRollAngle = Math.max(-this.maxRollAngle, Math.min(this.maxRollAngle, this.currentRollAngle));
         if (this.isFirstPersonCamera) {
-            this.rollAngle = Math.max(-0.03, Math.min(0.03, this.rollAngle));
+            this.rollAngle = Math.max(-0.03, Math.min(0.01, this.rollAngle));
         } else {
             this.rollAngle = Math.max(-0.1, Math.min(0.1, this.rollAngle));
         }
@@ -388,7 +414,6 @@ class Game {
         }
     }
 
-    // Handle mouse down and up events to track mouse button presses
     handleMouseDown(e) {
         this.isMousePressed = true;
         this.startCubeSpawning(e);
@@ -410,13 +435,6 @@ class Game {
     
         clearInterval(this.updateDirectionInterval);
         this.updateDirectionInterval = null;
-    }
-
-    // Initialize mouse input handling
-    initializeMouseInput() {
-        document.addEventListener("mousemove", (e) => this.handleMouseMove(e));
-        document.addEventListener("mousedown", (e) => this.handleMouseDown(e));
-        document.addEventListener("mouseup", (e) => this.handleMouseUp(e));
     }
 
     handleKeyPress(e) {
@@ -491,14 +509,13 @@ class Game {
 
     // Update the firing direction based on the current mouse position
     updateFiringDirection() {
-        const spaceship = getObject(this.state, "SpaceShip");
         const mouseWorldPosition = this.screenToWorld(this.mousePosition);
     
         // Iterate over all cubes and update their direction?? Bug or Feature?
         this.state.objects.forEach(object => {
-            if (object.type === 'cube') {
+            if (object.name.startsWith('Cube-') && object.model.position[2] < this.spaceship.model.position[2] + this.shootingCurve) {
                 let direction = vec3.create();
-                vec3.subtract(direction, vec3.fromValues(-mouseWorldPosition[0] - 5, mouseWorldPosition[1] - 5, mouseWorldPosition[2] + 25), spaceship.model.position);
+                vec3.subtract(direction, vec3.fromValues(-mouseWorldPosition[0] - 5, mouseWorldPosition[1] - 5, mouseWorldPosition[2] + 25), this.spaceship.model.position);
                 vec3.normalize(direction, direction);
                 object.direction = direction;
             }
@@ -533,22 +550,25 @@ class Game {
         const spaceship = getObject(this.state, "SpaceShip");
         const mouseWorldPosition = this.screenToWorld(mousePosition);
         
-        // Adjust the mouse world position to align with a point 25 units in front of the ship
+        // Adjust the mouse world position
         const targetPoint = vec3.clone(spaceship.model.position);
-        targetPoint[2] += 25; // Move 25 units in front
-        targetPoint[0] = -mouseWorldPosition[0]; // Align with mouse X
-        targetPoint[1] = mouseWorldPosition[1]; // Align with mouse Y
+        targetPoint[2] += 20; // Move 25 units in front
+        targetPoint[0] = -mouseWorldPosition[0] - 5; // Align with mouse X 
+        targetPoint[1] = mouseWorldPosition[1] - 5; // Align with mouse Y
     
-        // Calculate the direction from the spaceship to the target point
+        // Direction from the spaceship to the target point
         let direction = vec3.create();
         vec3.subtract(direction, targetPoint, spaceship.model.position);
         vec3.normalize(direction, direction);
 
         let spawnPosition = vec3.clone(spaceship.model.position);
-        spawnPosition[2] += 0.9; // Adjust z offset
+        spawnPosition[2] += 0.9;
     
-        this.spawnCube(this.state, spawnPosition);
-        this.state.objects[this.state.objects.length - 1].direction = direction;
+        // this.spawnCube(this.state, spawnPosition);
+        // this.state.objects[this.state.objects.length - 1].direction = direction;
+        
+        const cube = this.spawnCube(this.state, spawnPosition);
+        cube.direction = direction;
     }
 
     startCubeSpawning(e) {
@@ -574,7 +594,8 @@ class Game {
             model: "Space_Invader.obj",
             type: "mesh",
             material: {
-                diffuse: [0, 1, 0]
+                diffuse: [0, 1, 0],
+                alpha: 0.9,
             },
             position: adjustedPosition,
             scale: vec3.fromValues(0.2, 0.2, 0.2),
@@ -598,10 +619,58 @@ class Game {
         return cube;
     }
 
+    spawnEnemyCube(state, spawnPosition, direction) {
+        const cubeConfig = {
+            name: `EnemyCube-${Date.now()}`,
+            type: "cube",
+            material: {
+                diffuse: [1, 0, 0],
+                alpha: 0.99,
+            },
+            position: spawnPosition,
+            scale: vec3.fromValues(0.5, 0.5, 0.5),
+        };
+    
+        // Create a light source associated with the enemy's projectile
+        const lightConfig = {
+            type: 'pointLights',
+            position: vec3.clone(spawnPosition),
+            colour: [1, 0, 0],
+            intensity: 100,
+            strength: 30,
+        };
+    
+        const cube = addCube(cubeConfig, state);
+        //this.addLight(lightConfig, state);
+        cube.direction = direction;
+        //cube.lightSource = lightConfig;
+    }
+    
+
     updateCubes(deltaTime, state) {
-        const cubeSpeed = 20;
+        const cubeSpeed = this.cubeSpeed;
+        const spaceshipOffset = { x: 0, y: 0, z: 0 };
+
         state.objects.forEach(object => {
-            if (object.type === 'cube') {
+            if (object.type === 'enemyCube') {
+
+                let adjustedSpaceshipPosition = vec3.create();
+                vec3.add(adjustedSpaceshipPosition, this.spaceship.model.position, vec3.fromValues(spaceshipOffset.x, spaceshipOffset.y, spaceshipOffset.z));
+
+                // Calculate new direction towards the player's spaceship
+                let direction = vec3.create();
+                vec3.subtract(direction, adjustedSpaceshipPosition, object.model.position);
+                vec3.normalize(direction, direction);
+                object.direction = direction;
+    
+                // Update position based on the new direction
+                vec3.scaleAndAdd(
+                    object.model.position,
+                    object.model.position,
+                    object.direction,
+                    cubeSpeed * deltaTime
+                );
+            } else if (object.type === 'cube') {
                 vec3.scaleAndAdd(
                     object.model.position,
                     object.model.position,
@@ -654,11 +723,11 @@ class Game {
             model: asteroidModel,
             type: "mesh",
             material: {
-                // diffuse: [0.1, 0, 0],
-                // ambient: [0.5, 0.5, 0.5],
-                // specular: [0.5, 0.5, 0.5],
-                // n: 32,
-                // alpha: 1,
+                diffuse: [0.1, 0.1, 0.1],
+                ambient: [0.05, 0.05, 0.05],
+                specular: [0.2, 0.2, 0.2],
+                n: 32,
+                alpha: 1,
                 shaderType: 3
             },
             position: vec3.fromValues(
@@ -691,7 +760,7 @@ class Game {
             if (object.name.startsWith('Asteroid-')) {
                 // Check if the asteroid is behind the spaceship
                 if (object.model.position[2] < this.spaceship.model.position[2] - 17.5) {
-                    // Calculate the new Z position, 300 units in front of the spaceship
+                    // Calculate the new Z position, 400 units in front of the spaceship
                     const newZ = this.spaceship.model.position[2] + 400;
     
                     // Randomly determine new X and Y positions within a specified range
@@ -705,6 +774,81 @@ class Game {
             }
         });
     }
+
+    updateEnemyMovement(deltaTime) {
+        // Define the range of movement along the x-axis and y-axis
+        const minX = -40; // Left boundary for x-axis
+        const maxX = 40;  // Right boundary for x-axis
+        const minY = -7; // Lower boundary for y-axis
+        const maxY = 15;  // Upper boundary for y-axis
+        const minZ = 12; // Lower boundary for y-axis
+        const maxZ = 35;  // Upper boundary for y-axis
+    
+        // Movement speed along x-axis and y-axis (adjust as necessary)
+        const xSpeed = 10; // Units per second for x-axis
+        const ySpeed = 3; // Units per second for y-axis
+        const zSpeed = 8; // Units per second for y-axis
+    
+        // Check if the enemy is at or beyond the x-axis boundaries
+        if (this.enemy1.model.position[0] >= maxX || this.enemy1.model.position[0] <= minX) {
+            this.enemy1.xMovementFactor *= -1;
+        }
+    
+        // Check if the enemy is at or beyond the y-axis boundaries
+        if (this.enemy1.model.position[1] >= maxY || this.enemy1.model.position[1] <= minY) {
+            this.enemy1.yMovementFactor *= -1;
+        }
+
+        // Check if the enemy is at or beyond the z-axis boundaries
+        if (this.enemy1.model.position[2] >= maxZ || this.enemy1.model.position[2] <= minZ) {
+            this.enemy1.zMovementFactor *= -1;
+        }
+
+        this.enemy1Velocity = {
+            x: this.enemy1.xMovementFactor * xSpeed * deltaTime,
+            y: this.enemy1.yMovementFactor * ySpeed * deltaTime,
+            z: this.enemy1.zMovementFactor * zSpeed * deltaTime
+        };
+    
+        // Update position
+        this.enemy1.model.position[0] += this.enemy1.xMovementFactor * xSpeed * deltaTime;
+        this.enemy1.model.position[1] += this.enemy1.yMovementFactor * ySpeed * deltaTime;
+        this.enemy1.model.position[2] += this.enemy1.zMovementFactor * zSpeed * deltaTime;
+    
+        // Update the position of the light source to follow the enemy
+        if (this.enemy1light) {
+            this.enemy1light.position[0] = this.enemy1.model.position[0];
+            this.enemy1light.position[1] = this.enemy1.model.position[1];
+            this.enemy1light.position[2] = this.enemy1.model.position[2] + 47.5;
+        }
+    }
+
+    enemyAttack() {
+        // Spawn point
+        let spawnPosition = vec3.clone(this.enemy1.model.position);
+        spawnPosition[1] -= 1;
+        spawnPosition[2] += 45;
+    
+        // Target point (adjusted for enemy's predicted position)
+        let targetPosition = vec3.clone(this.spaceship.model.position);
+        targetPosition[0] -= 0.25;
+        targetPosition[2] += 18; // 22
+    
+        // Calculate the direction from the enemy's future position to the spaceship
+        let direction = vec3.create();
+        vec3.subtract(direction, targetPosition, spawnPosition);
+        vec3.normalize(direction, direction);
+    
+        // Check if the direction vector is valid
+        if (!vec3.length(direction)) {
+            console.error("Invalid direction vector. Check calculations.");
+            return;
+        }
+    
+        // Spawn the projectile (cube) from the enemy
+        this.spawnEnemyCube(this.state, spawnPosition, direction);
+    }
+      
 
     updateHealthBar() {
         const healthPercent = this.playerHealth;
@@ -745,7 +889,6 @@ class Game {
         this.collidableObjects.push(object);
     }
 
-    // example - function to check if an object is colliding with collidable objects
     checkCollision(object) {
         // Check collision between the given object and other collidable objects
         if (object.collider && object.position) {
@@ -779,10 +922,26 @@ class Game {
     }
 
     cleanupCubes(state) {
+        const maxDistance = 300;
+        // Filter through all objects
         state.objects = state.objects.filter(object => {
+            // Determine if the object is a cube
             if (object.type === 'cube') {
-                // Check if the cube is too far or off-screen and return false to remove it
+                const distance = vec3.distance(object.model.position, this.spaceship.model.position);
+    
+                // Check if the cube is further than the maximum allowed distance
+                if (distance > maxDistance) {
+                    //console.log(`Removing cube at distance: ${distance}`);
+    
+                    // Release resources and remove the cube
+                    if (object.model && object.model.release) {
+                        object.model.release();
+                    }
+                    return false; // Only remove the cube if it's beyond the maximum distance
+                }
             }
+        
+            // Keep the object if it's not a cube or within the maximum allowed distance
             return true;
         });
     }
@@ -800,22 +959,6 @@ class Game {
         this.initializeControls();
         this.initializeMouseInput();
         this.initializeCamera();
-
-        // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
-        // no collision can happen
-        // this.createSphereCollider(this.cube, 0.5, (otherObject) => {
-        //     console.log(`This is a custom collision of ${otherObject.name}`)
-        // });
-        // this.createSphereCollider(otherCube, 0.5);
-
-        // tempObject.constantRotate = true; // lets add a flag so we can access it later
-        // this.spawnedObjects.push(tempObject); // add these to a spawned objects list
-
-        // tempObject.collidable = true;
-        // tempObject.onCollide = (object) => { // we can also set a function on an object without defining the function before hand!
-        //     console.log(`I collided with ${object.name}!`);
-        // };
-        // }
     }
 
     // Runs once every frame non stop after the scene loads
@@ -827,23 +970,16 @@ class Game {
         this.spaceship.model.position[2] += forwardDistance;
         this.plane.model.position[2] += forwardDistance;
 
-        this.enemy1.model.position[2] += forwardDistance;
-
-        let lightSource = state.pointLights.find(light => light.name === "lightSource");
-        let playerLight = state.pointLights.find(light => light.name === "playerLight");
-        let weaponLight = state.pointLights.find(light => light.name === "weaponLight");
-        if (lightSource) {
-            lightSource.position[2] += forwardDistance;
-            playerLight.position[2] += forwardDistance;
-            weaponLight.position[2] += forwardDistance;
-        }
+        this.lightSource.position[2] += forwardDistance;
+        this.playerLight.position[2] += forwardDistance;
+        this.weaponLight.position[2] += forwardDistance;
 
         // Calculate the position difference between the spaceship and weaponLight
         const positionDifference = vec3.create();
-        vec3.subtract(positionDifference, this.spaceship.model.position, weaponLight.position);
+        vec3.subtract(positionDifference, this.spaceship.model.position, this.weaponLight.position);
 
         // Add the position difference to the weaponLight's position
-        vec3.add(weaponLight.position, weaponLight.position, positionDifference);
+        vec3.add(this.weaponLight.position, this.weaponLight.position, positionDifference);
 
         // Update the model matrix for the spaceship
         mat4.fromTranslation(this.spaceship.modelMatrix, this.spaceship.model.position);
@@ -864,40 +1000,60 @@ class Game {
             }
         }
 
+        // Track player
+        this.playerLastPosition = vec3.clone(this.spaceship.model.position);
+
+        // First person mode
         if (this.isFirstPersonCamera) {
+            this.shootingCurve += 5;
             this.updateFirstPersonCamera();
         }
 
+        // Free cam mode
         if (this.controlCamera) {
             this.updateCameraPosition();
-        }
-    
-        if (this.updatePositionStarted) {
+        } else if (this.updatePositionStarted) {
             this.updateSpaceshipPosition(deltaTime);
         }
 
+        // Update projectiles
         this.updateCubes(deltaTime, state);
 
+        // Move asteroids if behind path
         this.repositionAsteroids();
 
-        //this.cleanupCubes(state);
+        // Check for collisions
+        //this.checkCollision();
 
-        // example: Rotate all objects in the scene marked with a flag
-        // this.state.objects.forEach((object) => {
-        //     if (object.constantRotate) {
-        //         object.rotate('y', deltaTime * 0.5);
-        //     }
-        // });
+        // Send first enemy
+        if (this.spaceship.model.position[2] >= 100) {
+            // If yes, start the enemy attack if not already started
+            if (!this.enemyAttackIntervalSet) {
+                this.enemyAttackInterval = setInterval(() => {
+                    this.enemyAttack();
+                }, this.enemyFireRate);
+                this.enemyAttackIntervalSet = true;
+            }
 
-        // simulate a collision between the first spawned object and 'cube' 
-        // if (this.spawnedObjects[0].collidable) {
-        //     this.spawnedObjects[0].onCollide(this.cube);
-        // }
+            this.enemy1light.position[2] += forwardDistance;
+            this.enemy1.model.position[2] += forwardDistance;
+            this.updateEnemyMovement(deltaTime);
+        }
+
+        // Remove cubes that are not visible (too far away)
+        this.cleanupCubes(state);
 
         // Mod projectiles
         this.state.objects.forEach((object) => {
             if (object.name.startsWith('Cube-')) {
                 object.rotate('z', Math.random() * 1.5);
+            }
+        });
+
+        // Rotate the saucers
+        this.state.objects.forEach((object) => {
+            if (object.name.startsWith('Enemy')) {
+                object.rotate('z', Math.random() * 0.1);
             }
         });
 
@@ -911,18 +1067,12 @@ class Game {
             }
         });
 
+        // Find the associated cube and update the light's position (WIP)
         state.pointLights.forEach(light => {
-            // Find the associated cube and update the light's position
             const associatedCube = state.objects.find(obj => obj.lightSource === light);
             if (associatedCube) {
                 light.position = vec3.clone(associatedCube.model.position);
             }
         });
-    
-
-        // example - call our collision check method on our cube
-        //this.checkCollision(this.cube);
-        // Clean up objects that are behind the camera
-        //this.cleanupObjectsBehindCamera();
     }
 }

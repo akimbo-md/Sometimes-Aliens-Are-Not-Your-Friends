@@ -7,7 +7,7 @@
             "diffuse": [0.1, 0, 0],
             "ambient": [0.05, 0.05, 0.05],
             "specular": [0.5, 0.5, 0.5],
-            "n": 32,
+            "n": 1,
             "alpha": 0.25,
             "shaderType": 3
           },
@@ -26,7 +26,7 @@
             "diffuse": [0, 0.7, 1],
             "ambient": [0.05, 0.05, 0.05],
             "specular": [0.5, 0.5, 0.5],
-            "n": 10.000002,
+            "n": 25,
             "shaderType": 4,
             "alpha": 1
           },
@@ -59,46 +59,30 @@
         {
           "name": "Enemy1",
           "material": {
-            "diffuse": [0, 0.7, 1],
-            "ambient": [0.3, 0.3, 0.3],
-            "specular": [0.5, 0.5, 0.5],
-            "n": 10.000002,
+            "diffuse": [1, 0, 0],
+            "ambient": [0.05, 0.05, 0.05],
+            "specular": [1, 1, 1],
+            "n": 25,
             "shaderType": 4,
-            "alpha": 1
+            "alpha": 0.999
           },
           "type": "mesh",
-          "position": [0, 4, 20],
-          "scale": [0.2, 0.2, 0.2],
+          "position": [0, 9, 120],
+          "scale": [0.03000000074505806, 0.03000000074505806, 0.02000000074505806],
           "diffuseTexture": "alien.jpg",
           "normalTexture": "checkerNorm.jpg",
-          "rotation": [
-            -0.9999999403953552,
-            -7.039967296184474e-14,
-            -0.000004655109478335362,
-            0,
-            0,
-            1,
-            -1.518794157107095e-8,
-            0,
-            0.000004655109478335362,
-            -1.518794157107095e-8,
-            -0.9999999403953552,
-            0,
-            0,
-            0,
-            0,
-            1
-        ],
+          "rotation": [1, 0, 1.518794157107095e-8, 0, -1.518794157107095e-8, 0.0000023556663109047804, 1, 0, -3.6014726221894264e-14, -1, 0.0000023556663109047804, 0, 0, 0, 0, 1],
           "parent": null,
-          "model": "Saucer_2.obj"
+          "model": "ufo8.obj"
         }
+        
       ],
       "pointLights": [
         {
           "name": "lightSource",
           "colour": [1, 1, 1],
           "position": [2, 5, 320],
-          "strength": 300,
+          "strength": 100,
           "quadratic": 0.035,
           "linear": 0.09,
           "constant": 1,
@@ -126,6 +110,19 @@
           "intensity": 0.01,
           "quadratic": 0.035,
           "linear": 0.1,
+          "constant": 1,
+          "nearPlane": 0.5,
+          "farPlane": 400,
+          "shadow": 0
+        },
+
+        {
+          "name": "Enemy1Light",
+          "colour": [1, 0, 0],
+          "position": [0, 8.5, 167.5],
+          "strength": 10,
+          "quadratic": 0.035,
+          "linear": 0.09,
           "constant": 1,
           "nearPlane": 0.5,
           "farPlane": 400,

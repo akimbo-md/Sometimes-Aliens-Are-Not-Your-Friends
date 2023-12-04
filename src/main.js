@@ -80,7 +80,7 @@ async function main() {
 
     const fragShaderSample =
         `#version 300 es
-        #define MAX_LIGHTS 20
+        #define MAX_LIGHTS 100
         precision highp float;
         
         struct PointLight {
@@ -102,6 +102,7 @@ async function main() {
         uniform vec3 ambientVal;
         uniform vec3 specularVal;
         uniform float nVal;
+        uniform float uAlpha;
         uniform int samplerExists;
         uniform sampler2D uTexture;
         
@@ -113,11 +114,11 @@ async function main() {
             vec3 result = ambientVal; // Start with ambient lighting
         
             vec3 textureColor = vec3(1.0); // Default to white if no texture
-            if(samplerExists == 1){
+            if (samplerExists == 1) {
                 textureColor = texture(uTexture, oUV).rgb;
             }
         
-            for(int i = 0; i < numLights; i++) {
+            for (int i = 0; i < numLights; i++) {
                 PointLight light = pointLights[i];
                 vec3 lightDir = normalize(light.position - oFragPosition);
         
@@ -130,7 +131,7 @@ async function main() {
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), nVal);
                 vec3 specular = light.colour * light.strength * spec * specularVal;
         
-                // Attenuation (optional)
+                // Attenuation
                 float distance = length(light.position - oFragPosition);
                 float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * (distance * distance));
         
@@ -140,9 +141,53 @@ async function main() {
                 result += diffuse + specular;
             }
         
-            fragColor = vec4(result, 1.0);
-        }        
-        `;
+            fragColor = vec4(result, uAlpha);
+        }`;
+
+    const skyboxVertShaderSource = 
+        `#version 300 es
+        in vec3 aPosition;
+        
+        uniform mat4 uProjectionMatrix;
+        uniform mat4 uViewMatrix;
+        
+        out vec3 CameraDirection;
+        
+        void main() {
+            CameraDirection = aPosition;
+            mat4 view = uViewMatrix;
+            view[3][0] = 0.0;
+            view[3][1] = 0.0;
+            view[3][2] = 0.0;
+        
+            gl_Position = uProjectionMatrix * view * vec4(aPosition, 1.0);
+            gl_Position = gl_Position.xyww;
+        }`;
+
+    const skyboxFragShaderSource = 
+        `#version 300 es
+        precision highp float;
+        in vec3 CameraDirection;
+        
+        uniform samplerCube uSkybox;
+        
+        out vec4 fragColor;
+        
+        void main() {
+            vec3 envColor = texture(uSkybox, CameraDirection).rgb;
+            fragColor = vec4(envColor, 1.0);
+        }`;
+
+    // Initialize the shader program for the skybox
+    const skyboxShaderProgram = initShaderProgram(gl, skyboxVertShaderSource, skyboxFragShaderSource);
+    state.skyboxProgramInfo = {
+        program: skyboxShaderProgram,
+        uniformLocations: {
+            uProjectionMatrix: gl.getUniformLocation(skyboxShaderProgram, 'uProjectionMatrix'),
+            uViewMatrix: gl.getUniformLocation(skyboxShaderProgram, 'uViewMatrix'),
+            uSkybox: gl.getUniformLocation(skyboxShaderProgram, 'uSkybox'),
+        },
+    };
 
     /**
      * Initialize state with new values (some of these you can replace/change)
@@ -178,6 +223,18 @@ async function main() {
             addCustom(object, state);
         }
     }
+
+    const skyboxImagePaths = {
+        px: 'skybox/sky4rt.jpg', // Positive x
+        nx: 'skybox/sky4lf.jpg', // Negative x
+        py: 'skybox/sky4up.jpg', // Positive y (up)
+        ny: 'skybox/sky4dn.jpg', // Negative y (down)
+        pz: 'skybox/sky4ft.jpg', // Positive z
+        nz: 'skybox/sky4bk.jpg'  // Negative z
+    };
+    
+    state.skyboxTexture = loadCubemap(gl, skyboxImagePaths);
+    state.skyboxBuffers = initSkyboxBuffers(gl);
 
     const then = new Date();
     const loadingTime = (then.getTime() - now.getTime()) / 1000;
@@ -241,9 +298,30 @@ function drawScene(gl, deltaTime, state) {
     gl.enable(gl.CULL_FACE); // Cull the backface of our objects to be more efficient // enable?
     gl.cullFace(gl.BACK);
     gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     // gl.frontFace(gl.CCW);
     gl.clearDepth(1.0); // Clear everything
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // Projection Matrix
+    let projectionMatrix = mat4.create();
+    let fovy = 90.0 * Math.PI / 180.0;
+    let aspect = state.canvas.clientWidth / state.canvas.clientHeight;
+    let near = 0.1;
+    let far = 1000.0;
+    mat4.perspective(projectionMatrix, fovy, aspect, near, far);
+
+    // View Matrix
+    let viewMatrix = mat4.create();
+    let camFront = vec3.create();
+    vec3.add(camFront, state.camera.position, state.camera.front);
+    mat4.lookAt(viewMatrix, state.camera.position, camFront, state.camera.up);
+
+    // console.log("Projection Matrix:", projectionMatrix);
+    // console.log("View Matrix:", viewMatrix);
+
+    // Draw the skybox
+    drawSkybox(gl, state.skyboxProgramInfo, state.skyboxBuffers, state.skyboxTexture, projectionMatrix, viewMatrix);
 
     // sort objects by nearness to camera
     let sorted = state.objects.sort((a, b) => {
@@ -256,7 +334,6 @@ function drawScene(gl, deltaTime, state) {
         return vec3.distance(state.camera.position, vec3.fromValues(aCentroidFour[0], aCentroidFour[1], aCentroidFour[2]))
             >= vec3.distance(state.camera.position, vec3.fromValues(bCentroidFour[0], bCentroidFour[1], bCentroidFour[2])) ? -1 : 1;
     });
-
     // iterate over each object and render them
     sorted.map((object) => {
         gl.useProgram(object.programInfo.program);
@@ -317,13 +394,9 @@ function drawScene(gl, deltaTime, state) {
             gl.uniform3fv(object.programInfo.uniformLocations.ambientVal, object.material.ambient);
             gl.uniform3fv(object.programInfo.uniformLocations.specularVal, object.material.specular);
             gl.uniform1f(object.programInfo.uniformLocations.nVal, object.material.n);
+            gl.uniform1f(object.programInfo.uniformLocations.alphaVal, object.material.alpha);
 
             // Lights
-            // let mainLight = state.pointLights[0];
-            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.position'), mainLight.position);
-            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.colour'), mainLight.colour);
-            // gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'mainLight.strength'), mainLight.strength);
-
             gl.uniform1i(object.programInfo.uniformLocations.numLights, state.numLights);
             if (state.pointLights.length > 0) {
                 for (let i = 0; i < state.pointLights.length; i++) {
@@ -380,4 +453,144 @@ function drawScene(gl, deltaTime, state) {
             }
         }
     });
+}
+
+function loadCubemap(gl, imagePaths) {
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+    const faceInfos = [
+        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, path: imagePaths.px },
+        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X, path: imagePaths.nx },
+        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y, path: imagePaths.py },
+        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, path: imagePaths.ny },
+        { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z, path: imagePaths.pz },
+        { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, path: imagePaths.nz },
+    ];
+
+    faceInfos.forEach((faceInfo, index) => {
+        const { target, path } = faceInfo;
+        const level = 0;
+        const internalFormat = gl.RGBA;
+        const width = 1024;
+        const height = 1024;
+        const format = gl.RGBA;
+        const type = gl.UNSIGNED_BYTE;
+
+        // Initialize texture with empty data for proper allocation
+        gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null);
+
+        const image = new Image();
+        image.onload = () => {
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+            gl.texImage2D(target, level, internalFormat, format, type, image);
+            gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+
+            console.log(`Skybox texture ${path} loaded`);
+        };
+        image.src = path;
+    });
+
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
+
+    return texture;
+}
+
+
+function drawSkybox(gl, skyboxProgramInfo, skyboxBuffers, skyboxTexture, projectionMatrix, viewMatrix) {
+    // console.log("Drawing skybox");
+    gl.useProgram(skyboxProgramInfo.program);
+    gl.bindVertexArray(skyboxBuffers.vao);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyboxTexture);
+    gl.uniform1i(skyboxProgramInfo.uniformLocations.uSkybox, 0);
+
+    // Remove the translation part of the view matrix
+    let skyboxViewMatrix = mat4.clone(viewMatrix);
+    skyboxViewMatrix[12] = 0;
+    skyboxViewMatrix[13] = 0;
+    skyboxViewMatrix[14] = 0;
+
+    gl.uniformMatrix4fv(skyboxProgramInfo.uniformLocations.uProjectionMatrix, false, projectionMatrix);
+    gl.uniformMatrix4fv(skyboxProgramInfo.uniformLocations.uViewMatrix, false, skyboxViewMatrix);
+
+    gl.depthFunc(gl.LEQUAL); // Render the skybox at the far depth
+    gl.drawArrays(gl.TRIANGLES, 0, 36); // Assuming the VAO contains a cube
+    gl.depthFunc(gl.LESS); // Reset depth function
+}
+
+
+function initSkyboxBuffers(gl) {
+    const vertices = [
+        // Back face
+        -1.0, -1.0, -1.0,
+         1.0,  1.0, -1.0,
+         1.0, -1.0, -1.0,       
+         1.0,  1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        -1.0,  1.0, -1.0,
+        // Front face
+        -1.0, -1.0,  1.0,
+         1.0, -1.0,  1.0,
+         1.0,  1.0,  1.0,
+         1.0,  1.0,  1.0,
+        -1.0,  1.0,  1.0,
+        -1.0, -1.0,  1.0,
+        // Left face
+        -1.0,  1.0,  1.0,
+        -1.0,  1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0,  1.0,
+        -1.0,  1.0,  1.0,
+        // Right face
+         1.0,  1.0,  1.0,
+         1.0, -1.0, -1.0,
+         1.0,  1.0, -1.0,    
+         1.0, -1.0, -1.0,
+         1.0,  1.0,  1.0,
+         1.0, -1.0,  1.0,
+        // Bottom face
+        -1.0, -1.0, -1.0,
+         1.0, -1.0, -1.0,
+         1.0, -1.0,  1.0,
+         1.0, -1.0,  1.0,
+        -1.0, -1.0,  1.0,
+        -1.0, -1.0, -1.0,
+        // Top face
+        -1.0,  1.0, -1.0,
+         1.0,  1.0,  1.0,
+         1.0,  1.0, -1.0,
+         1.0,  1.0,  1.0,
+        -1.0,  1.0, -1.0,
+        -1.0,  1.0,  1.0
+    ];
+
+    const skyboxVAO = gl.createVertexArray();
+    gl.bindVertexArray(skyboxVAO);
+
+    const skyboxVBO = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, skyboxVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    const positionAttributeLocation = 0;
+    const numComponents = 3;  // (x, y, z)
+    const type = gl.FLOAT;
+    const normalize = false;
+    const stride = 0;
+    const offset = 0;
+    gl.vertexAttribPointer(positionAttributeLocation, numComponents, type, normalize, stride, offset);
+    gl.enableVertexAttribArray(positionAttributeLocation);
+
+    gl.bindVertexArray(null); // Unbind the VAO
+
+    // console.log("Skybox buffers returning..");
+    return {
+        vao: skyboxVAO
+    };
 }
