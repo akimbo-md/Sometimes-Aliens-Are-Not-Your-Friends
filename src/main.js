@@ -140,10 +140,61 @@ async function main() {
         
                 result += diffuse + specular;
             }
+<<<<<<< Updated upstream
         
             fragColor = vec4(result, 1.0);
         }        
         `;
+=======
+            
+            fragColor = vec4(result, uAlpha);
+        }`;
+
+    const skyboxVertShaderSource = 
+        `#version 300 es
+        in vec3 aPosition;
+        
+        uniform mat4 uProjectionMatrix;
+        uniform mat4 uViewMatrix;
+        
+        out vec3 CameraDirection;
+        
+        void main() {
+            CameraDirection = aPosition;
+            mat4 view = uViewMatrix;
+            view[3][0] = 0.0;
+            view[3][1] = 0.0;
+            view[3][2] = 0.0;
+        
+            gl_Position = uProjectionMatrix * view * vec4(aPosition, 1.0);
+            gl_Position = gl_Position.xyww;
+        }`;
+
+    const skyboxFragShaderSource = 
+        `#version 300 es
+        precision highp float;
+        in vec3 CameraDirection;
+        
+        uniform samplerCube uSkybox;
+        
+        out vec4 fragColor;
+        
+        void main() {
+            vec3 envColor = texture(uSkybox, CameraDirection).rgb;
+            fragColor = vec4(envColor, 1.0);
+        }`;
+
+    // Initialize the shader program for the skybox
+    const skyboxShaderProgram = initShaderProgram(gl, skyboxVertShaderSource, skyboxFragShaderSource);
+    state.skyboxProgramInfo = {
+        program: skyboxShaderProgram,
+        uniformLocations: {
+            uProjectionMatrix: gl.getUniformLocation(skyboxShaderProgram, 'uProjectionMatrix'),
+            uViewMatrix: gl.getUniformLocation(skyboxShaderProgram, 'uViewMatrix'),
+            uSkybox: gl.getUniformLocation(skyboxShaderProgram, 'uSkybox'),
+        },
+    };
+>>>>>>> Stashed changes
 
     /**
      * Initialize state with new values (some of these you can replace/change)
