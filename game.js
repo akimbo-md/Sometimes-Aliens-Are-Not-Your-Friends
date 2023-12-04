@@ -1056,44 +1056,36 @@ class Game {
         // Remove cubes that are not visible (too far away)
         this.cleanupCubes(state);
 
-        // Mod projectiles
+        
+        // Loop for objects in gamestate
         this.state.objects.forEach((object) => {
+            
+            if (object.name.startsWith('Enemy')) {
+                object.rotate('z', Math.random() * 0.1); // Rotate the saucers
+            } 
+            
             if (object.name.startsWith('Cube-')) {
                 object.rotate('z', Math.random() * 1.5);
 
                 if ( this.is_between(this.enemy1.model.position[0], object.model.position[0], 2) && this.is_between(this.enemy1.model.position[1], object.model.position[1], 2) && this.is_between(this.enemy1.model.position[2], object.model.position[2], 2) ){
-                    console.log("UFO HIT!")
+                    console.log("UFO HIT!");
                 }
-                
-                
             }
-        });
-        
-        this.state.objects.forEach((object) => {
-            if (object.name.startsWith('EnemyCube')) {
-                if ( this.is_between(this.spaceship.model.position[0], object.model.position[0], 1) && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1) && this.is_between(this.spaceship.model.position[2], object.model.position[2], 1) ){
-                    console.log("PLAYER HAS BEEN HIT!")
-                }
-
-            }
-        });
-
-        
-
-                // Rotate the saucers
-        this.state.objects.forEach((object) => {
-            if (object.name.startsWith('Enemy')) {
-                object.rotate('z', Math.random() * 0.1);
-            }
-        });
-
-        // Rotate the asteroids
-        this.state.objects.forEach((object) => {
+            
             if (object.name.startsWith('Asteroid-')) {
                 // Random rotation around each axis
                 object.rotate('x', Math.random() * 0.02);
                 object.rotate('y', Math.random() * 0.02);
                 object.rotate('z', Math.random() * 0.02);
+            }
+            
+            if (object.name.startsWith('EnemyCube')) {
+                if ( this.is_between(this.spaceship.model.position[0], object.model.position[0], 1) && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1) && this.is_between(this.spaceship.model.position[2], object.model.position[2], 1) ){
+                    console.log("PLAYER HAS BEEN HIT!");
+                    this.playerHealth -= 1;
+                    this.updateHealthBar();
+                }
+
             }
         });
 
