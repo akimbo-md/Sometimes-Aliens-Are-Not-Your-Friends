@@ -205,6 +205,7 @@ async function main() {
         meshCache: {},
         samplerExists: 0,
         samplerNormExists: 0,
+        sceneLoaded: false,
     };
 
     state.numLights = state.pointLights.length;
@@ -244,6 +245,7 @@ async function main() {
     await game.onStart();
     loadingPage.remove();
     startRendering(gl, state); // now that scene is setup, start rendering it
+    state.sceneLoaded = true;
 }
 
 /**
