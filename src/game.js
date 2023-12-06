@@ -46,8 +46,8 @@ class Game {
         this.spaceshipSpawned = false;
         this.cubeSpawnInterval = null; // Store the interval ID
         this.cubeSpawnRate = 100; // Time in milliseconds between cube spawns
-        this.cubeSpeed = 55;
-        this.shootingCurve = 10; // How much the player can change projectile trajectory
+        this.cubeSpeed = 75;
+        this.shootingCurve = 35; // How much the player can change projectile trajectory
 
         this.wave = 0;
         this.waveNumber = document.getElementById('waveNumber');
@@ -877,6 +877,18 @@ class Game {
 
         // Flash enemy light
         this.flashEnemyLight();
+
+        // Updates player score (this lasts way too long)
+        this.playerScore += 10;
+        this.updateScoreDisplay(this.score);
+    }
+
+    // A function to update the displayed score
+    updateScoreDisplay() {
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        if (scoreDisplay) {
+            scoreDisplay.innerText = `Score: ${this.playerScore}`;
+        }
     }
 
     stopEnemyAttacks() {

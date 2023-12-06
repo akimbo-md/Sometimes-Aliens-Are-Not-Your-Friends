@@ -95,3 +95,11 @@
     text-align: center;
     display: none; /* hidden */
 }
+
+#scoreDisplay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: white;
+}
