@@ -399,7 +399,7 @@ class Game {
         this.spaceship.model.position[0] = Math.max(minX - overstepMargin, Math.min(maxX + overstepMargin, newX));
         this.spaceship.model.position[1] = Math.max(minY - overstepMargin, Math.min(maxY + overstepMargin, newY));
 
-        // Apply boosting
+        //Apply boosting
         // if (this.isBoosting && this.currentBoost > 0) {
         //     vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed * 1.3); // Boosted speed
         //     this.currentBoost -= this.boostDecayRate;
@@ -839,7 +839,39 @@ class Game {
         this.enemy1.model.position[0] += this.enemy1.xMovementFactor * xSpeed * deltaTime;
         this.enemy1.model.position[1] += this.enemy1.yMovementFactor * ySpeed * deltaTime;
         this.enemy1.model.position[2] += this.enemy1.zMovementFactor * zSpeed * deltaTime;
-    }
+
+        // Enemy AI unstuck mechanic
+        let enemyStuckTimer = 0;
+        const enemyStuckThreshold = 5; // Time limit until enemy gets forcefully repositioned
+        const boundaryBuffer = 1; // buffer zone if their close but not touching the boundary. May need adjusting.
+        const isStuck =
+        (this.enemy1.model.position[0] >= maxX - boundaryBuffer|| this.enemy1.model.position[0] <= minX + boundaryBuffer) || 
+        (this.enemy1.model.position[1] >= maxY - boundaryBuffer|| this.enemy1.model.position[1] <= minY) + boundaryBuffer||
+        (this.enemy1.model.position[2] >= maxZ - boundaryBuffer|| this.enemy1.model.position[2] <= minZ + boundaryBuffer);
+    
+    
+        if (isStuck) {
+            enemyStuckTimer += deltaTime; // Increment the timer when the enemy is stuck
+            //console.log(`Enemy stuck timer: ${enemyStuckTimer}`); // dev tool
+            if (enemyStuckTimer >= enemyStuckThreshold) {
+                // Teleport the enemy x units in front of the spaceship
+                const spaceshipPosition = getObject(this.state, "SpaceShip").model.position;
+                const teleportDistance = 100;
+                this.enemy1.model.position = vec3.fromValues(
+                    spaceshipPosition[0],
+                    spaceshipPosition[1],
+                    spaceshipPosition[2] + teleportDistance
+                );
+
+                // Reset the stuck timer after teleportation
+                enemyStuckTimer = 0;
+                console.log("Enemy has been teleported due to being stuck")
+            }
+        } else {
+            // Reset the timer when the enemy is not stuck
+            enemyStuckTimer = 0;
+        }
+        }
 
     enemyAttack() {
         // Spawn point
