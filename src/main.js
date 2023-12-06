@@ -175,7 +175,8 @@ async function main() {
         
         void main() {
             vec3 envColor = texture(uSkybox, CameraDirection).rgb;
-            fragColor = vec4(envColor, 1.0);
+            //fragColor = vec4(envColor, 1.0);
+            fragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color
         }`;
 
     // Initialize the shader program for the skybox
@@ -246,6 +247,14 @@ async function main() {
     loadingPage.remove();
     startRendering(gl, state); // now that scene is setup, start rendering it
     state.sceneLoaded = true;
+
+    const mainMenu = document.getElementById('mainMenu');
+    const gameTitleMessage = document.getElementById('gameTitleMessage');
+    const startButton = document.getElementById('startButton');
+
+    mainMenu.style.display = 'block';
+    gameTitleMessage.style.display = 'block';
+    startButton.style.display = 'block';
 }
 
 /**
