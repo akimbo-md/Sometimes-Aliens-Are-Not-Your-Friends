@@ -1,0 +1,178 @@
+[
+    {
+      "objects": [
+        {
+          "name": "tempPlane",
+          "material": {
+            "diffuse": [0, 0, 0],
+            "ambient": [0.005, 0.005, 0.005],
+            "specular": [0, 0, 0],
+            "n": 1,
+            "alpha": 0,
+            "shaderType": 3
+          },
+          "type": "plane",
+          "position": [0, -12, 0],
+          "scale": [40, 1, 1060],
+          "diffuseTexture": "matrix.jpg",
+          "normalTexture": "defaultNorm.jpg",
+          "rotation": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+          "parent": null,
+          "model": null
+        },
+        {
+          "name": "SpaceShip",
+          "material": {
+            "diffuse": [0, 0.4, 0.6],
+            "ambient": [0.02, 0.02, 0.02],
+            "specular": [0.5, 0.5, 0.5],
+            "n": 125,
+            "shaderType": 4,
+            "alpha": 1
+          },
+          "type": "mesh",
+          "position": [0, 0, 2],
+          "scale": [0.9, 0.9, 0.9],
+          "diffuseTexture": "alien.jpg",
+          "normalTexture": "checkerNorm.jpg",
+          "rotation": [
+            -0.9999999403953552,
+            -7.039967296184474e-14,
+            -0.000004655109478335362,
+            0,
+            0,
+            1,
+            -1.518794157107095e-8,
+            0,
+            0.000004655109478335362,
+            -1.518794157107095e-8,
+            -0.9999999403953552,
+            0,
+            0,
+            0,
+            0,
+            1
+        ],
+          "parent": null,
+          "model": "ship6.obj"
+        },
+        {
+          "name": "Enemy1",
+          "material": {
+            "diffuse": [1, 0, 0],
+            "ambient": [0.05, 0.05, 0.05],
+            "specular": [1, 1, 1],
+            "n": 225,
+            "shaderType": 4,
+            "alpha": 0.999
+          },
+          "type": "mesh",
+          "position": [0, 9, 500],
+          "scale": [0.03000000074505806, 0.03000000074505806, 0.02000000074505806],
+          "diffuseTexture": "alien.jpg",
+          "normalTexture": "checkerNorm.jpg",
+          "rotation": [1, 0, 1.518794157107095e-8, 0, -1.518794157107095e-8, 0.0000023556663109047804, 1, 0, -3.6014726221894264e-14, -1, 0.0000023556663109047804, 0, 0, 0, 0, 1],
+          "parent": null,
+          "model": "ufo8.obj"
+        }
+
+        
+      ],
+      "pointLights": [
+        {
+          "name": "lightSource",
+          "colour": [1, 1, 1],
+          "position": [2, 5, 320],
+          "strength": 100,
+          "quadratic": 0.035,
+          "linear": 0.09,
+          "constant": 1,
+          "nearPlane": 0.5,
+          "farPlane": 400,
+          "shadow": 0
+        },
+        {
+          "name": "playerLight",
+          "colour": [1, 1, 1],
+          "position": [2, 30, 5],
+          "strength": 45,
+          "quadratic": 0.035,
+          "linear": 0.09,
+          "constant": 1,
+          "nearPlane": 0.5,
+          "farPlane": 400,
+          "shadow": 0
+        },
+        {
+          "name": "weaponLight",
+          "colour": [0, 1, 0],
+          "position": [0, 0.15, 3],
+          "strength": 0.001,
+          "intensity": 0.01,
+          "quadratic": 0.035,
+          "linear": 0.1,
+          "constant": 1,
+          "nearPlane": 0.5,
+          "farPlane": 400,
+          "shadow": 0
+        },
+
+        {
+          "name": "Enemy1Light",
+          "colour": [1, 0, 0],
+          "position": [0, 8.5, 1067.5],
+          "strength": 20,
+          "quadratic": 0.035,
+          "linear": 0.09,
+          "constant": 1,
+          "nearPlane": 0.5,
+          "farPlane": 400,
+          "shadow": 0
+        }
+      ],
+      "settings": {
+        "camera": {
+          "name": "mainCamera",
+          "position": [0, 5, -5],
+          "front": [-0.01313674737364058, -0.33873793690267073, 0.9407890496659511],
+          "up": [0, 1, 0],
+          "pitch": -19.800000000000104,
+          "yaw": 90.80000000000072,
+          "roll": 0,
+          "moveSpeed": 10,
+          "move": false,
+          "canvasFocused": false,
+          "rateX": 0,
+          "rateY": 0,
+          "keyboard": {
+            "S": false,
+            "s": false,
+            "a": false,
+            "d": false,
+            "w": false
+          },
+          "viewMatrix": {
+            "0": -0.9999025464057922,
+            "1": -0.004729520063847303,
+            "2": 0.013136745430529118,
+            "3": 0,
+            "4": 0,
+            "5": 0.9408807754516602,
+            "6": 0.33873799443244934,
+            "7": 0,
+            "8": -0.013962178491055965,
+            "9": 0.3387049734592438,
+            "10": -0.9407890439033508,
+            "11": 0,
+            "12": 0.6141287684440613,
+            "13": -0.40511858463287354,
+            "14": -5.0762763023376465,
+            "15": 1
+          },
+          "sensitivity": 0.4
+        },
+        "backgroundColor": [0, 0, 0]
+      }
+    }
+  ]
+  

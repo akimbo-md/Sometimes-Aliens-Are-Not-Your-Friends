@@ -35,3 +35,23 @@ function printError(tag, errorStr) {
     // Print to the console as well
     console.error(tag + ": " + errorStr);
 }
+
+function showGameOverMessage() {
+    const gameOverElement = document.getElementById('gameOverMessage');
+    gameOverElement.style.display = 'block'; // Show the element
+}
+
+function hideGameOverMessage() {
+    const gameOverElement = document.getElementById('gameOverMessage');
+    gameOverElement.style.display = 'none'; // Hide the element
+}
+
+function showTitleMessage() {
+    const gameTitleElement = document.getElementById('gameTitleMessage');
+    gameTitleElement.style.display = 'block'; // Show the element
+}
+
+function hideTitleMessage() {
+    const gameTitleElement = document.getElementById('gameTitleMessage');
+    gameTitleElement.style.display = 'none'; // Show the element
+}

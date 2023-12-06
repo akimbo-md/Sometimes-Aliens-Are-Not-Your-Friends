@@ -12,7 +12,7 @@ class Game {
         this.enemy1light = state.pointLights.find(light => light.name === "Enemy1Light");
 
         this.controlCamera = false;
-        this.cameraSpeed = 10;
+        this.cameraSpeed = 15;
         this.isFirstPersonCamera = false;
 
         this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -45,18 +45,39 @@ class Game {
         this.spaceshipSpawnDelay = 2;
         this.spaceshipSpawned = false;
         this.cubeSpawnInterval = null; // Store the interval ID
-        this.cubeSpawnRate = 200; // Time in milliseconds between cube spawns
-        this.cubeSpeed = 35;
-        this.shootingCurve = 2; // How much the player can change projectile trajectory
+        this.cubeSpawnRate = 100; // Time in milliseconds between cube spawns
+        this.cubeSpeed = 55;
+        this.shootingCurve = 10; // How much the player can change projectile trajectory
 
+        this.wave = 0;
+        this.waveNumber = document.getElementById('waveNumber');
+        this.waveComplete = false; // For round intermission
+
+        
         this.enemy1 = getObject(state, "Enemy1");
+        this.enemySpeed = 1;
+        this.enemy1Health = 200;
+        this.enemy2Health = 0;
+        this.enemy3Health = 0;
+        this.enemy4Health = 0;
+        this.enemy5Health = 0;
+        this.lastWaveHealth = 200; // Base health
+        this.enemyNum = 1; // Number of enemies in play
+        this.enemyHealthTotal = 200;
+        this.maxEnemyHealthTotal = 200; // Max health of the enemy health pool
+        this.enemyHealthBar = document.getElementById('enemyHealth');
         this.enemy1.xMovementFactor = 1;
         this.enemy1.yMovementFactor = 1;
         this.enemy1.zMovementFactor = 1;
+        this.enemy1MoveDirection = [];
         this.enemy1Velocity = [];
+        
         this.enemyIsAttacking = false;
         this.enemyAttackIntervalSet = false;
         this.enemyFireRate = 350;
+        this.enemy1Killed = false;
+        this.enemyInvulnerable = false;
+        this.intermission = true;
         // this.enemy2 = getObject(state, "Enemy2");
         // this.enemy3 = getObject(state, "Enemy3");
         // this.enemy4 = getObject(state, "Enemy4");
@@ -82,6 +103,7 @@ class Game {
         this.updatePositionStarted = false;
 
         this.playerHealth = 100;
+        this.playerHealthBar = document.getElementById('healthBar');
         this.playerBoost = 50;
         this.playerScore = 0;
 
@@ -98,6 +120,8 @@ class Game {
         this.isSpawning = false; // Flag to indicate if we're currently spawning
         this.spawnThreshold = 20; // Adjust as needed based on camera speed
         this.spawnDistanceAhead = 20; // How far ahead to spawn the new field
+
+        this.gameOver = false;
 
         this.frame = 0;
     }
@@ -513,7 +537,7 @@ class Game {
     updateFiringDirection() {
         const mouseWorldPosition = this.screenToWorld(this.mousePosition);
     
-        // Iterate over all cubes and update their direction?? Bug or Feature?
+        // Iterate over all cubes and update their direction
         this.state.objects.forEach(object => {
             if (object.name.startsWith('Cube-') && object.model.position[2] < this.spaceship.model.position[2] + this.shootingCurve) {
                 let direction = vec3.create();
@@ -692,24 +716,21 @@ class Game {
     }
 
     spawnAsteroidField() {
-        // Calculate the number of asteroids to spawn
-        const travelTime = 400 / this.cameraSpeed;
-        const numAsteroids = Math.floor(travelTime / 2) * 1.25;
+        const numAsteroids = 1;
 
         for (let i = 0; i < numAsteroids; i++) {
-            // Calculate the Z position for each asteroid
             const zPos = 200 + (i * (400 / numAsteroids));
-            this.spawnAsteroid(zPos);
+            this.spawnAsteroid(0, 0, zPos);
         }
     }
 
-    spawnAsteroid(zPos) {
+    spawnAsteroid(xPos, yPos, zPos) {
         // Define the range for spawning asteroids (adjust as needed)
-        const xMin = -7; // Adjusted minimum X position
-        const xMax = 12; // Adjusted maximum X position
-        const yMin = -6; // Adjusted minimum Y position
-        const yMax = 7;  // Adjusted maximum Y position
-        const zOffsetAhead = 200; // Distance ahead of the spaceship
+        // const xMin = -7; // Adjusted minimum X position
+        // const xMax = 12; // Adjusted maximum X position
+        // const yMin = -6; // Adjusted minimum Y position
+        // const yMax = 7;  // Adjusted maximum Y position
+
 
         // Randomly choose an asteroid model
         const asteroidModels = ["asteroid3.obj", "asteroid4.obj", "asteroid5.obj", 
@@ -717,7 +738,7 @@ class Game {
         const asteroidModel = asteroidModels[Math.floor(Math.random() * asteroidModels.length)];
 
         // Random size variation
-        const sizeFactor = 0.1 + Math.random() * 1.2; // Random scale between 0.5 and 2
+        const sizeFactor = 0.3 + Math.random() * 1.7; // Random scale
 
         // Define the asteroid configuration
         const asteroidConfig = {
@@ -727,43 +748,45 @@ class Game {
             material: {
                 diffuse: [0.1, 0.1, 0.1],
                 ambient: [0.05, 0.05, 0.05],
-                specular: [0.2, 0.2, 0.2],
-                n: 32,
+                specular: [0.1, 0.1, 0.1],
+                n: 10,
                 alpha: 1,
                 shaderType: 3
             },
             position: vec3.fromValues(
-                Math.random() * (xMax - xMin) + xMin - 20,
-                Math.random() * (yMax - yMin) + yMin + 5,
-                //spaceshipPosition[2] + zOffsetAhead // Z position ahead of the spaceship
-                zPos + zOffsetAhead
+                xPos,
+                yPos,
+                zPos
             ),
             scale: vec3.fromValues(sizeFactor, sizeFactor, sizeFactor),
-            diffuseTexture: "apple.jpg", // apple for testing
+            diffuseTexture: "DefaultMaterial_albedo.jpg",
             normalTexture: "DefaultMaterial_normal.png"
         };
 
         // Add the asteroid to the game state
         const newAsteroid = spawnObject(asteroidConfig, this.state);
+        this.spawnedObjects.push(newAsteroid);
+        this.asteroidPool.push(asteroidConfig);
+        
         if (newAsteroid && newAsteroid.model) { // Check if the model property exists ?? Doesn't work
-            this.spawnedObjects.push(newAsteroid);
-            this.asteroidPool.push(newAsteroid); // Add to the asteroid pool
+             // Add to the asteroid pool
             console.log(this.asteroidPool[0]);
         }
     }
 
     repositionAsteroids() {
-        const xMin = -7; // Adjusted minimum X position
-        const xMax = 12; // Adjusted maximum X position
-        const yMin = -6; // Adjusted minimum Y position
-        const yMax = 7;  // Adjusted maximum Y position
+        const xMin = -80;
+        const xMax = 80;
+        const yMin = -10;
+        const yMax = 10;
+        const zMin = 400;
+        const zMax = 800;
 
         this.state.objects.forEach((object) => {
             if (object.name.startsWith('Asteroid-')) {
                 // Check if the asteroid is behind the spaceship
                 if (object.model.position[2] < this.spaceship.model.position[2] - 17.5) {
-                    // Calculate the new Z position, 400 units in front of the spaceship
-                    const newZ = this.spaceship.model.position[2] + 400;
+                    const newZ = this.spaceship.model.position[2] + Math.random() * (zMax - zMin) + zMin;
     
                     // Randomly determine new X and Y positions within a specified range
                     const newX = Math.random() * (xMax - xMin) + xMin - 20;
@@ -779,17 +802,17 @@ class Game {
 
     updateEnemyMovement(deltaTime) {
         // Define the range of movement along the x-axis and y-axis
-        const minX = -40; // Left boundary for x-axis
-        const maxX = 40;  // Right boundary for x-axis
-        const minY = -7; // Lower boundary for y-axis
-        const maxY = 15;  // Upper boundary for y-axis
-        const minZ = 12; // Lower boundary for y-axis
-        const maxZ = 35;  // Upper boundary for y-axis
+        const minX = -40;
+        const maxX = 40;
+        const minY = -7;
+        const maxY = 15;
+        const minZ = 12;
+        const maxZ = 35;
     
-        // Movement speed along x-axis and y-axis (adjust as necessary)
-        const xSpeed = 10; // Units per second for x-axis
-        const ySpeed = 3; // Units per second for y-axis
-        const zSpeed = 8; // Units per second for y-axis
+        // Movement speed along x-axis and y-axis
+        const xSpeed = 10 * this.enemySpeed;
+        const ySpeed = 3 * this.enemySpeed;
+        const zSpeed = 8 * this.enemySpeed;
     
         // Check if the enemy is at or beyond the x-axis boundaries
         if (this.enemy1.model.position[0] >= maxX || this.enemy1.model.position[0] <= minX) {
@@ -816,13 +839,6 @@ class Game {
         this.enemy1.model.position[0] += this.enemy1.xMovementFactor * xSpeed * deltaTime;
         this.enemy1.model.position[1] += this.enemy1.yMovementFactor * ySpeed * deltaTime;
         this.enemy1.model.position[2] += this.enemy1.zMovementFactor * zSpeed * deltaTime;
-    
-        // Update the position of the light source to follow the enemy
-        if (this.enemy1light) {
-            this.enemy1light.position[0] = this.enemy1.model.position[0];
-            this.enemy1light.position[1] = this.enemy1.model.position[1];
-            this.enemy1light.position[2] = this.enemy1.model.position[2] + 47.5;
-        }
     }
 
     enemyAttack() {
@@ -850,21 +866,111 @@ class Game {
         // Spawn the projectile (cube) from the enemy
         this.spawnEnemyCube(this.state, spawnPosition, direction);
     }
+
+    enemyKilled() {
+        // Update wave number text
+        this.waveNumber.innerText = "Complete"; // remove later
+        this.enemy1Killed = true; // Will need a parameter and switch later
+
+        // Stop enemy from shooting
+        this.stopEnemyAttacks();
+
+        // Flash enemy light
+        this.flashEnemyLight();
+    }
+
+    stopEnemyAttacks() {
+        clearInterval(this.enemyAttackInterval);
+        this.enemyAttackInterval = null;
+    }
+
+    flashEnemyLight() {
+        let enemyLight = this.enemy1light;
+
+        // Flash the light on and off
+        if (enemyLight) {
+            let flashInterval = setInterval(() => {
+                enemyLight.strength = enemyLight.strength === 0 ? 40 : 0;
+            }, 333);
+
+            // Stop flashing after a certain duration
+            setTimeout(() => {
+                clearInterval(flashInterval);
+                enemyLight.strength = 10; // Reset light
+            }, 3300);
+        }
+    }
+
+    // Increment the difficulty as the player progresses
+    initializeWave() {
+        this.wave += 1;
+        console.log("Wave: ", this.wave);
+        this.waveNumber.innerText = `Wave ${this.wave}`;
+
+        if (this.wave === 1) { // Starting wave
+            this.enemy1Health = this.lastWaveHealth;
+            this.enemyNum = 1;
+            this.enemyHealthTotal = this.enemy1Health + this.enemy2Health + this.enemy3Health + this.enemy4Health + this.enemy5Health; 
+            this.waveComplete = false;
+            return;
+        } else {
+            this.enemy1Health = this.lastWaveHealth * 1.2; // Increment enemy health every wave
+            this.lastWaveHealth = this.enemy1Health;
+        }
+        // Player increments
+        this.cameraSpeed *= 1.2; // 10% increase in spaceship speed
+        this.cubeSpeed *= 1.2; // Accomodate cube speed
+        this.playerHealth = 100; // Reset player health
+
+        // Reposition enemies
+        this.enemy1.model.position = [0, 9, 300 + this.spaceship.model.position[2]];
+        this.enemy1.model.rotation = [1, 0, 1.518794157107095e-8, 0, -1.518794157107095e-8, 0.0000023556663109047804, 1, 0, -3.6014726221894264e-14, -1, 0.0000023556663109047804, 0, 0, 0, 0, 1];
+
+        // Update total and max enemy health
+        this.enemyHealthTotal = this.enemy1Health;
+        this.maxEnemyHealthTotal = this.enemy1Health;
+
+        this.enemyFireRate *= 0.9;
+        this.enemySpeed *= 1.15;
+
+        this.enemy1light.strength = 15;
+        this.enemyAttackIntervalSet = false;
+        this.enemy1Killed = false;
+
+        // Add total enemy health
+        this.maxEnemyHealthTotal = this.enemy1Health + this.enemy2Health + this.enemy3Health + this.enemy4Health + this.enemy5Health; 
+        console.log(this.maxEnemyHealthTotal);
+
+        this.waveComplete = false;
+        this.updateHealthBar();
+    }
       
-
     updateHealthBar() {
-        const healthPercent = this.playerHealth;
-        const healthBar = document.getElementById('healthBar');
-        healthBar.style.width = `${healthPercent}%`;
+        const playerHealthPercent = this.playerHealth;
+        const playerHealthBar = document.getElementById('healthBar');
 
-        // Change color based on health
-        if (healthPercent < 20) {
+        const enemyHealthPercent = (this.enemyHealthTotal / this.maxEnemyHealthTotal) * 100;
+        const enemyHealthBar = document.getElementById('enemyHealthBar');
+
+        playerHealthBar.style.width = `${playerHealthPercent}%`;
+        enemyHealthBar.style.width = `${enemyHealthPercent}%`;
+
+        // Change color based on health of player
+        if (this.playerHealth < 20) {
             healthBar.style.backgroundColor = 'red';
-        } else if (healthPercent < 40) {
+        } else if (this.playerHealth < 40) {
             healthBar.style.backgroundColor = 'orange';
         } else {
             healthBar.style.backgroundColor = 'green';
         }
+
+    }
+
+    playerKilled() {
+        this.gameOver = true;
+        this.stopEnemyAttacks();
+
+        showGameOverMessage();
     }
 
     cleanupObjectsBehindCamera() { // Does this even work? Maybe change to outside of plane
@@ -972,6 +1078,19 @@ class Game {
         this.initializeControls();
         this.initializeMouseInput();
         this.initializeCamera();
+        this.initializeWave();
+        this.spawnAsteroid(-17, 0, 100);
+        this.spawnAsteroid(-17, 0, 150);
+        this.spawnAsteroid(-17, 0, 200);
+        /*
+        for(var i = 0; i < 50 ; i++){
+            let randX = Math.random() * (11 - -11) + -11;
+            let randY = Math.random() * (5 - -5) + -5;
+            this.spawnAsteroid(randX + 17, randY, 500 + i * 10);
+        }
+        */
+        
+    
     }
 
     // Runs once every frame non stop after the scene loads
@@ -979,14 +1098,26 @@ class Game {
         // Move the camera and ship forward by reducing the Z value
         const forwardDistance = this.cameraSpeed * deltaTime;
 
-        this.state.camera.position[2] += forwardDistance;
-        this.spaceship.model.position[2] += forwardDistance;
-        this.plane.model.position[2] += forwardDistance;
+        if (this.state.sceneLoaded) {
+            this.state.camera.position[2] += forwardDistance;
+            this.plane.model.position[2] += forwardDistance;
 
-        this.lightSource.position[2] += forwardDistance;
-        this.playerLight.position[2] += forwardDistance;
-        this.weaponLight.position[2] += forwardDistance;
+            if (!this.gameOver) {
+                this.spaceship.model.position[2] += forwardDistance;
+            } else {
+                this.spaceship.rotate('z', 0.1);
+            }
 
+            this.lightSource.position[2] += forwardDistance;
+            this.playerLight.position[2] += forwardDistance;
+            this.weaponLight.position[2] += forwardDistance;
+
+            if (this.wave == 0){
+                showTitleMessage();
+                this.initializeWave();
+            }
+        }
+        
         // Calculate the position difference between the spaceship and weaponLight
         const positionDifference = vec3.create();
         vec3.subtract(positionDifference, this.spaceship.model.position, this.weaponLight.position);
@@ -1013,9 +1144,6 @@ class Game {
             }
         }
 
-        // Track player
-        this.playerLastPosition = vec3.clone(this.spaceship.model.position);
-
         // First person mode
         if (this.isFirstPersonCamera) {
             this.shootingCurve += 5;
@@ -1038,9 +1166,10 @@ class Game {
         // Check for collisions
         //this.checkCollision();
 
-        // Send first enemy
-        if (this.spaceship.model.position[2] >= 100) {
-            // If yes, start the enemy attack if not already started
+        // Start wave when enemy approaches player
+        if (this.spaceship.model.position[2] >= this.enemy1.model.position[2] - 15) {
+            this.intermission = false;
+
             if (!this.enemyAttackIntervalSet) {
                 this.enemyAttackInterval = setInterval(() => {
                     this.enemyAttack();
@@ -1048,55 +1177,154 @@ class Game {
                 this.enemyAttackIntervalSet = true;
             }
 
-            this.enemy1light.position[2] += forwardDistance;
-            this.enemy1.model.position[2] += forwardDistance;
-            this.updateEnemyMovement(deltaTime);
+            // When each enemy is killed, move them off screen
+            if (!this.enemy1Killed) {
+                // Enemy health pool
+                this.enemyHealthTotal = this.enemy1Health + this.enemy2Health + this.enemy3Health + this.enemy4Health + this.enemy5Health; 
+
+                // Track spaceship 
+                this.enemy1light.position[2] += forwardDistance;
+                this.enemy1.model.position[2] += forwardDistance;
+
+                // Move enemy
+                this.updateEnemyMovement(deltaTime);
+            } else {
+                // Animate ship off screen
+                this.enemy1.rotate('y', 0.05);
+                this.enemy1.model.position[1] += 0.02;
+            }
+            
+        }
+
+        // Check if the player is still alive
+        if (this.playerHealth <= 0) {
+            this.playerKilled();
+        }
+
+        // Wave is complete when all enemies are eliminated
+        if (this.enemyHealthTotal <= 0) {
+            this.waveComplete = true;
+        }
+
+        if (this.enemy1Health <= 0) {
+            this.enemyKilled();
+        }
+        if (this.enemy2Health <= 0) {
+            //this.enemyKilled();
+        }
+        if (this.enemy3Health <= 0) {
+            //this.enemyKilled();
+        }
+        if (this.enemy4Health <= 0) {
+            //this.enemyKilled();
+        }
+        if (this.enemy5Health <= 0) {
+            //this.enemyKilled();
+        }
+
+        // Round intermission
+        if (this.waveComplete) {
+            // TODO Once all enemies moves off screen, start the next wave
+            if (this.enemy1.model.position[2] < this.spaceship.model.position[2] - 120) {
+                this.enemy1Killed = false; // Reset the flag
+                this.initializeWave();
+            }
         }
 
         // Remove cubes that are not visible (too far away)
         this.cleanupCubes(state);
-
-        // Mod projectiles
+        
+        // Loop for objects in gamestate
         this.state.objects.forEach((object) => {
+            
+            if (object.name.startsWith('Enemy')) {
+                object.rotate('z', Math.random() * 0.1); // Rotate the saucers
+            } 
+
+            // Update the position of the light source to follow the enemy
+            this.enemy1light.position[0] = this.enemy1.model.position[0];
+            this.enemy1light.position[1] = this.enemy1.model.position[1];
+            this.enemy1light.position[2] = this.enemy1.model.position[2] + 47.5;
+            
+            // Player Projectiles
             if (object.name.startsWith('Cube-')) {
                 object.rotate('z', Math.random() * 1.5);
+                
+                /*
+                if (this.frame % 500 == 0){
+                    console.log(object.model.position[0] + ' ' + object.model.position[1] + ' ' + object.model.position[2]);
+                }
+                */
 
-                if ( this.is_between(this.enemy1.model.position[0], object.model.position[0], 2) && this.is_between(this.enemy1.model.position[1], object.model.position[1], 2) && this.is_between(this.enemy1.model.position[2], object.model.position[2], 2) ){
-                    console.log("UFO HIT!")
+                if ( this.is_between(this.enemy1.model.position[0], object.model.position[0], 3)
+                    && this.is_between(this.enemy1.model.position[1], object.model.position[1], 2.5) 
+                    && this.is_between(this.enemy1.model.position[2] + 37, object.model.position[2], 2) ){
+
+                    if (!this.intermission) {
+                        this.enemy1Health -= 10;
+                        this.updateHealthBar()
+                    }
+                    console.log("UFO HIT!");
+                    object.model.position = vec3.fromValues(0, 0, 1000);
+                    
                 }
                 
                 
             }
-        });
-        
-        this.state.objects.forEach((object) => {
+
+            // Enemy Projectiles
             if (object.name.startsWith('EnemyCube')) {
-                if ( this.is_between(this.spaceship.model.position[0], object.model.position[0], 1) && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1) && this.is_between(this.spaceship.model.position[2], object.model.position[2], 1) ){
-                    console.log("PLAYER HAS BEEN HIT!")
+                if ( this.is_between(this.spaceship.model.position[0], object.model.position[0], 1) 
+                    && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1) 
+                    && this.is_between(this.spaceship.model.position[2], object.model.position[2], 1) ) {
+
+                    console.log("PLAYER HAS BEEN HIT!");
+                    object.model.position = vec3.fromValues(0, 0, 1000);
+                    this.playerHealth -= 5;
+                    this.updateHealthBar();
                 }
-
             }
-        });
-
-        
-
-                // Rotate the saucers
-        this.state.objects.forEach((object) => {
-            if (object.name.startsWith('Enemy')) {
-                object.rotate('z', Math.random() * 0.1);
-            }
-        });
-
-        // Rotate the asteroids
-        this.state.objects.forEach((object) => {
+            
+            // Asteroids
             if (object.name.startsWith('Asteroid-')) {
                 // Random rotation around each axis
-                object.rotate('x', Math.random() * 0.02);
-                object.rotate('y', Math.random() * 0.02);
-                object.rotate('z', Math.random() * 0.02);
+                object.rotate('x', Math.random() * 0.01);
+                object.rotate('y', Math.random() * 0.01);
+                object.rotate('z', Math.random() * 0.01);
+                
+                this.state.objects.forEach((cube) => {
+
+                    if (cube.type == "cube")  {
+                        if ( this.is_between(object.model.position[0] + 17, cube.model.position[0], 1.5) 
+                          && this.is_between(object.model.position[1], cube.model.position[1], 2) 
+                          && this.is_between(object.model.position[2], cube.model.position[2], 0.5) ) {
+                            
+                            object.model.position = vec3.fromValues(0, 0, 0);
+                            cube.model.position = vec3.fromValues(0, 0, 1000);
+                            
+                            console.log("LASER HIT ASTEROID!");
+                            }
+                    }
+
+
+                });
+                
+                // Collision condition
+                if ( this.is_between(this.spaceship.model.position[0], object.model.position[0] + 17, 1.5) 
+                    && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1.5) 
+                    && this.is_between(this.spaceship.model.position[2] - 15, object.model.position[2], 0.3) ) {
+                    
+                    object.model.position = vec3.fromValues(0, 0, 0);
+                    console.log("HIT BY ASTEROID!");
+                    this.playerHealth -= 10;
+                    this.updateHealthBar();
+                }
+
+
             }
         });
-
+        
+        this.frame++;
         // Find the associated cube and update the light's position (WIP)
         state.pointLights.forEach(light => {
             const associatedCube = state.objects.find(obj => obj.lightSource === light);
