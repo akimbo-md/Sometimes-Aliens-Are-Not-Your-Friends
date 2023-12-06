@@ -877,6 +877,17 @@ class Game {
 
         // Flash enemy light
         this.flashEnemyLight();
+
+        this.playerScore += 20;
+        this.updateScoreDisplay(this.score);
+    }
+
+    // A function to update the displayed score
+    updateScoreDisplay() {
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        if (scoreDisplay) {
+            scoreDisplay.innerText = `Score: ${this.playerScore}`;
+        }
     }
 
     stopEnemyAttacks() {
