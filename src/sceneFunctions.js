@@ -30,3 +30,11 @@ function randomVec3(min, max) {
         Math.random(min, max),
     )
 }
+
+function removeObjectFromState(object, state) {
+    // Remove object from state.objects or any other relevant collections
+    const index = state.objects.indexOf(object);
+    if (index > -1) {
+        state.objects.splice(index, 1);
+    }
+}

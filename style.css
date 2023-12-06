@@ -8,6 +8,7 @@
     border: 2px solid #000;
     background-color: #eee;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+    display: none;
 }
 
 #healthBar {
@@ -15,9 +16,10 @@
     height: 100%;
     background-color: green;
     transition: width 0.3s ease;
+    display: none;
 }
 
-#boostBarContainer {
+#ammoBarContainer {
     position: absolute;
     left: 50%;
     bottom: 28px;
@@ -27,11 +29,177 @@
     border: 2px solid #000;
     background-color: #eee;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+    display: none;
 }
 
-#boostBar {
+#ammoBar {
     width: 100%;
     height: 100%;
     background-color: blue; /* Different color to distinguish from health bar */
     transition: width 0.3s ease;
+    display: none;
+}
+
+#enemyHealthBarContainer {
+    position: absolute;
+    left: 50%;
+    top: 2%;
+    transform: translateX(-50%);
+    width: 800px; 
+    height: 10px; 
+    border: 2px solid #000;
+    background-color: #eee;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex; 
+    justify-content: center;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+#enemyHealthBar {
+    width: 0%;
+    height: 100%;
+    background-color: red;
+    transition: width 1.5s ease;
+    overflow: hidden;
+    transform-origin: center;
+    align-self: center;
+}
+
+#waveNumber {
+    position: absolute;
+    left: 50%;
+    top: 5%;
+    transform: translateX(-50%);
+    min-width: 100px;
+    min-height: 50px;
+    color: white;
+    background-color: black;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 25px;
+    text-align: center;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#gameTitleMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: blueviolet;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 69px;
+    text-align: center;
+    display: none;
+}
+
+#pausedMessage {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: blueviolet;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 69px;
+    text-align: center;
+    display: none
+}
+
+#mainMenu {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#startButton {
+    font-size: 40px;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: rgb(43, 226, 67);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-family: 'Orbitron', sans-serif;
+    display: none;
+}
+
+#gameOverMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 69px;
+    text-align: center;
+<<<<<<< Updated upstream
+    display: none; /* hidden */
+=======
+    display: none;
+}
+
+#playAgain {
+    position: absolute;
+    font-size: 40px;
+    bottom: 10%;
+    left: 50%;
+    padding: 10px 20px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    background-color: rgb(226, 43, 43);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+    display: none;
+>>>>>>> Stashed changes
+}
+
+#scoreDisplay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: white;
+<<<<<<< Updated upstream
+=======
+    font-family: 'Orbitron', sans-serif;
+    display: none;
+}
+
+#speedCalculation {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    display: none;
+}
+
+#volumeControlContainer {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#volumeControlContainer label {
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+#volumeSlider {
+    width: 150px;
+    vertical-align: middle;
+>>>>>>> Stashed changes
 }

@@ -4,11 +4,11 @@
         {
           "name": "tempPlane",
           "material": {
-            "diffuse": [0.1, 0, 0],
-            "ambient": [0.5, 0.5, 0.5],
-            "specular": [0.5, 0.5, 0.5],
-            "n": 32,
-            "alpha": 0.25,
+            "diffuse": [0, 0, 0],
+            "ambient": [0.005, 0.005, 0.005],
+            "specular": [0, 0, 0],
+            "n": 1,
+            "alpha": 0,
             "shaderType": 3
           },
           "type": "plane",
@@ -21,12 +21,31 @@
           "model": null
         },
         {
+            "name": "tempPlane2",
+            "material": {
+              "diffuse": [0, 0, 0],
+              "ambient": [0.005, 0.005, 0.005],
+              "specular": [0, 0, 0],
+              "n": 1,
+              "alpha": 0,
+              "shaderType": 3
+            },
+            "type": "plane",
+            "position": [0, -12, 530],
+            "scale": [40, 1, 1060],
+            "diffuseTexture": "matrix.jpg",
+            "normalTexture": "defaultNorm.jpg",
+            "rotation": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            "parent": null,
+            "model": null
+          },
+        {
           "name": "SpaceShip",
           "material": {
-            "diffuse": [0, 0.7, 1],
-            "ambient": [0.3, 0.3, 0.3],
+            "diffuse": [0, 0.4, 0.6],
+            "ambient": [0.02, 0.02, 0.02],
             "specular": [0.5, 0.5, 0.5],
-            "n": 10.000002,
+            "n": 125,
             "shaderType": 4,
             "alpha": 1
           },
@@ -55,14 +74,3734 @@
         ],
           "parent": null,
           "model": "ship6.obj"
-        }
+        },
+        {
+          "name": "Enemy1",
+          "material": {
+            "diffuse": [1, 0, 0],
+            "ambient": [0.07, 0.07, 0.07],
+            "specular": [1, 1, 1],
+            "n": 225,
+            "shaderType": 4,
+            "alpha": 0.999
+          },
+          "type": "mesh",
+          "position": [0, 9, 120],
+          "scale": [0.03000000074505806, 0.03000000074505806, 0.02000000074505806],
+          "diffuseTexture": "alien.jpg",
+          "normalTexture": "checkerNorm.jpg",
+          "rotation": [1, 0, 1.518794157107095e-8, 0, -1.518794157107095e-8, 0.0000023556663109047804, 1, 0, -3.6014726221894264e-14, -1, 0.0000023556663109047804, 0, 0, 0, 0, 1],
+          "parent": null,
+          "model": "ufo8.obj"
+        },
+        
+    {
+      "name": "Asteroid-0",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          1.7753700546776727,
+          0.5973567891554126,
+          -603.1075566884017
+      ],
+      "scale": [
+          0.7662626876412173,
+          0.7662626876412173,
+          0.7662626876412173
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-1",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          3.260316603909992,
+          4.804292822949737,
+          -474.0487571918666
+      ],
+      "scale": [
+          0.7868583838624481,
+          0.7868583838624481,
+          0.7868583838624481
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-2",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          8.029432397408002,
+          8.359011843075237,
+          -760.7557483904338
+      ],
+      "scale": [
+          0.7073116404272526,
+          0.7073116404272526,
+          0.7073116404272526
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-3",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          9.694343446590285,
+          -7.020652831274288,
+          -553.0199273921831
+      ],
+      "scale": [
+          0.8743343071032128,
+          0.8743343071032128,
+          0.8743343071032128
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-4",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -11.962114032043777,
+          -3.57839945308009,
+          -733.7753713640129
+      ],
+      "scale": [
+          0.5056315442153267,
+          0.5056315442153267,
+          0.5056315442153267
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-5",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -3.7721599404407815,
+          3.075143876786724,
+          -642.2031484354978
+      ],
+      "scale": [
+          0.7252298141318569,
+          0.7252298141318569,
+          0.7252298141318569
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-6",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -7.670678685438477,
+          -0.48247909976416636,
+          -768.6696604477324
+      ],
+      "scale": [
+          0.4707658808402069,
+          0.4707658808402069,
+          0.4707658808402069
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-7",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          10.858029323845944,
+          6.668996101370563,
+          -427.15593579186157
+      ],
+      "scale": [
+          0.48991721450494397,
+          0.48991721450494397,
+          0.48991721450494397
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-8",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          17.023408511015184,
+          -3.9767531571498527,
+          -527.3604417236054
+      ],
+      "scale": [
+          0.38328916013746434,
+          0.38328916013746434,
+          0.38328916013746434
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-9",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -3.2049451813012846,
+          0.7482729668999415,
+          -569.4450663710332
+      ],
+      "scale": [
+          1.158428879685463,
+          1.158428879685463,
+          1.158428879685463
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-10",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -3.5120009378754906,
+          -1.9894877322061317,
+          -530.2944719773177
+      ],
+      "scale": [
+          0.5012366978587657,
+          0.5012366978587657,
+          0.5012366978587657
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-11",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          6.61458248842219,
+          4.179284330575019,
+          -648.0974160702624
+      ],
+      "scale": [
+          0.6093663887499795,
+          0.6093663887499795,
+          0.6093663887499795
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-12",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -10.642246099558257,
+          4.589537483015256,
+          -555.3569125445318
+      ],
+      "scale": [
+          0.5705316921709732,
+          0.5705316921709732,
+          0.5705316921709732
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-13",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          11.873485425496899,
+          6.420661927350778,
+          -515.4665761386003
+      ],
+      "scale": [
+          0.3883052083690667,
+          0.3883052083690667,
+          0.3883052083690667
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-14",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          2.25741061217159,
+          4.194989601251313,
+          -692.4860023155316
+      ],
+      "scale": [
+          0.3323274627809233,
+          0.3323274627809233,
+          0.3323274627809233
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-15",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -9.929152576031736,
+          -9.923944193020072,
+          -730.3344755504761
+      ],
+      "scale": [
+          0.766755726645295,
+          0.766755726645295,
+          0.766755726645295
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-16",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -13.520577208334455,
+          -1.8405501788579173,
+          -439.4844936218857
+      ],
+      "scale": [
+          0.6952595929389829,
+          0.6952595929389829,
+          0.6952595929389829
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-17",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -1.4898596304177314,
+          -7.5497045946277686,
+          -697.2641976197497
+      ],
+      "scale": [
+          0.46251499162927245,
+          0.46251499162927245,
+          0.46251499162927245
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-18",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -1.2472942681811663,
+          -2.8097260580605266,
+          -728.8829953193924
+      ],
+      "scale": [
+          0.41035516991012966,
+          0.41035516991012966,
+          0.41035516991012966
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-19",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          17.074875567840557,
+          1.4130107926102138,
+          -619.2980618765881
+      ],
+      "scale": [
+          0.33034514435668333,
+          0.33034514435668333,
+          0.33034514435668333
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-20",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          18.214813465279455,
+          6.308228349379938,
+          -732.7457686075907
+      ],
+      "scale": [
+          0.6517195993707254,
+          0.6517195993707254,
+          0.6517195993707254
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-21",
+      "model": "asteroid5.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          17.01631639142773,
+          -7.473343030106001,
+          -565.8816696075255
+      ],
+      "scale": [
+          1.0446262077134465,
+          1.0446262077134465,
+          1.0446262077134465
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-22",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          0.9303671350877067,
+          7.079224610996619,
+          -517.3041949230675
+      ],
+      "scale": [
+          0.8775772114194889,
+          0.8775772114194889,
+          0.8775772114194889
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-23",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          4.9538564272695425,
+          8.943531635773585,
+          -640.5735899367792
+      ],
+      "scale": [
+          0.7378505353155277,
+          0.7378505353155277,
+          0.7378505353155277
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-24",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          8.044069093515155,
+          -0.8077931832513379,
+          -732.050991749629
+      ],
+      "scale": [
+          0.6614858880707295,
+          0.6614858880707295,
+          0.6614858880707295
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-25",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          19.278496318208674,
+          -2.6905049707417987,
+          -565.2646925070526
+      ],
+      "scale": [
+          1.0595762507290658,
+          1.0595762507290658,
+          1.0595762507290658
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-26",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          6.593964464617422,
+          -1.7963181085903122,
+          -633.5081922626416
+      ],
+      "scale": [
+          0.6180810916027817,
+          0.6180810916027817,
+          0.6180810916027817
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-27",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -0.0802699274075005,
+          5.099623336458032,
+          -468.16129042227215
+      ],
+      "scale": [
+          0.6099950795324444,
+          0.6099950795324444,
+          0.6099950795324444
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-28",
+      "model": "asteroid5.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          15.94961680471048,
+          6.198449018947791,
+          -726.5917686461075
+      ],
+      "scale": [
+          0.7061927944760225,
+          0.7061927944760225,
+          0.7061927944760225
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-29",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          1.2025934303263561,
+          -7.293945776920854,
+          -443.90831934084844
+      ],
+      "scale": [
+          0.8632393972447896,
+          0.8632393972447896,
+          0.8632393972447896
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-30",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -7.570300070737995,
+          0.6310791191525027,
+          -787.6874338953121
+      ],
+      "scale": [
+          0.43838869160366845,
+          0.43838869160366845,
+          0.43838869160366845
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-31",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -8.205750868037068,
+          5.405035286013595,
+          -481.45866845134805
+      ],
+      "scale": [
+          0.5324589783721202,
+          0.5324589783721202,
+          0.5324589783721202
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-32",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          3.3281946584046835,
+          -8.15336235499436,
+          -404.97890460532255
+      ],
+      "scale": [
+          0.7103618754643934,
+          0.7103618754643934,
+          0.7103618754643934
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-33",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -1.8663416106245432,
+          0.31769669544532597,
+          -686.9228845198168
+      ],
+      "scale": [
+          0.36096435932961446,
+          0.36096435932961446,
+          0.36096435932961446
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-34",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -2.9445832179066933,
+          -7.427600134058478,
+          -430.13402346979217
+      ],
+      "scale": [
+          0.8645361917162746,
+          0.8645361917162746,
+          0.8645361917162746
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-35",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          5.883510992686276,
+          -8.976238695390323,
+          -662.8437390904733
+      ],
+      "scale": [
+          0.8404252154556915,
+          0.8404252154556915,
+          0.8404252154556915
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-36",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -8.349837519119593,
+          8.351481190631606,
+          -683.8569445788968
+      ],
+      "scale": [
+          1.14245536989102,
+          1.14245536989102,
+          1.14245536989102
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-37",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -6.015502257120218,
+          0.9984146657725272,
+          -789.897763021101
+      ],
+      "scale": [
+          0.8973186686094037,
+          0.8973186686094037,
+          0.8973186686094037
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-38",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          8.455871448017454,
+          1.0291321270707892,
+          -466.48679317280664
+      ],
+      "scale": [
+          1.1563749713578484,
+          1.1563749713578484,
+          1.1563749713578484
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-39",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          4.6790164874335645,
+          -2.3921385904006485,
+          -425.325125699277
+      ],
+      "scale": [
+          0.7621472950477711,
+          0.7621472950477711,
+          0.7621472950477711
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-40",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          0.4891979234035677,
+          1.663355395664155,
+          -673.9060429762171
+      ],
+      "scale": [
+          0.701168073339402,
+          0.701168073339402,
+          0.701168073339402
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-41",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          17.029854555219423,
+          8.500526858673947,
+          -452.13438852052036
+      ],
+      "scale": [
+          0.6363178471925552,
+          0.6363178471925552,
+          0.6363178471925552
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-42",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -9.802432415132493,
+          -5.551731600691962,
+          -618.8484559415069
+      ],
+      "scale": [
+          1.1868463624960701,
+          1.1868463624960701,
+          1.1868463624960701
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-43",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          15.723845857784372,
+          8.056971195279022,
+          -438.75056946182013
+      ],
+      "scale": [
+          0.4294735928794505,
+          0.4294735928794505,
+          0.4294735928794505
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-44",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          7.036795083851125,
+          -9.435673976101452,
+          -562.6891766732797
+      ],
+      "scale": [
+          0.9218875668153816,
+          0.9218875668153816,
+          0.9218875668153816
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-45",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -0.3174945195471688,
+          -2.023633262443866,
+          -529.001226601067
+      ],
+      "scale": [
+          0.8150137411365947,
+          0.8150137411365947,
+          0.8150137411365947
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-46",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          6.4874669255179995,
+          -0.08638892409715737,
+          -522.1020572839419
+      ],
+      "scale": [
+          0.9633565634778394,
+          0.9633565634778394,
+          0.9633565634778394
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-47",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          5.20542843680451,
+          -2.069732424264518,
+          -540.4850875465922
+      ],
+      "scale": [
+          0.3783794610584499,
+          0.3783794610584499,
+          0.3783794610584499
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-48",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          19.689219542457636,
+          7.6910568001661375,
+          -427.82848465528144
+      ],
+      "scale": [
+          1.1119095136884245,
+          1.1119095136884245,
+          1.1119095136884245
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-49",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -3.0684294866450372,
+          1.3443220603523969,
+          -445.66065483380703
+      ],
+      "scale": [
+          0.4394912480601284,
+          0.4394912480601284,
+          0.4394912480601284
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-50",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          6.811901893807246,
+          6.852750771363279,
+          -667.5017889010201
+      ],
+      "scale": [
+          0.8667160491879189,
+          0.8667160491879189,
+          0.8667160491879189
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-51",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          11.956808088774622,
+          3.244923487151956,
+          -485.92313280599643
+      ],
+      "scale": [
+          0.5451356289108074,
+          0.5451356289108074,
+          0.5451356289108074
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-52",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          10.064823172797826,
+          -2.7933738028847475,
+          -486.5496036695811
+      ],
+      "scale": [
+          1.0235810336923865,
+          1.0235810336923865,
+          1.0235810336923865
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-53",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          6.025911148427603,
+          3.449588942384892,
+          -489.5136561714707
+      ],
+      "scale": [
+          0.7829855172517457,
+          0.7829855172517457,
+          0.7829855172517457
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-54",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          4.1944388563718285,
+          8.495937661094892,
+          -779.9194616273503
+      ],
+      "scale": [
+          1.0080607538783475,
+          1.0080607538783475,
+          1.0080607538783475
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-55",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          6.185301239568135,
+          -4.974472292242551,
+          -792.9351346346109
+      ],
+      "scale": [
+          0.46547248747631975,
+          0.46547248747631975,
+          0.46547248747631975
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-56",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -11.148538480220694,
+          1.838901686251349,
+          -545.6950358399588
+      ],
+      "scale": [
+          1.0211125126420342,
+          1.0211125126420342,
+          1.0211125126420342
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-57",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          4.937677009112727,
+          -0.8975918101010327,
+          -572.0337286533888
+      ],
+      "scale": [
+          0.9438851517250411,
+          0.9438851517250411,
+          0.9438851517250411
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-58",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          18.769349179933783,
+          9.48363947282191,
+          -459.77365465677997
+      ],
+      "scale": [
+          0.7097260012439524,
+          0.7097260012439524,
+          0.7097260012439524
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-59",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          9.500428746358274,
+          -3.4109743121420104,
+          -593.8270158063278
+      ],
+      "scale": [
+          0.3190744192224986,
+          0.3190744192224986,
+          0.3190744192224986
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-60",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -7.149310122805511,
+          6.77679532758275,
+          -770.3089324157938
+      ],
+      "scale": [
+          0.6832070542055055,
+          0.6832070542055055,
+          0.6832070542055055
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-61",
+      "model": "asteroid5.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -10.501505055812288,
+          4.220261901593679,
+          -608.9586323266293
+      ],
+      "scale": [
+          1.099962427282821,
+          1.099962427282821,
+          1.099962427282821
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-62",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -11.780608032741222,
+          6.689783245258777,
+          -768.4351548235554
+      ],
+      "scale": [
+          0.30525160412295077,
+          0.30525160412295077,
+          0.30525160412295077
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-63",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          16.28611762764849,
+          -9.018243771080229,
+          -521.7189604049811
+      ],
+      "scale": [
+          1.1727378185585646,
+          1.1727378185585646,
+          1.1727378185585646
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-64",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          7.596683727114513,
+          5.931875229329272,
+          -530.1274803292347
+      ],
+      "scale": [
+          1.1854540690306434,
+          1.1854540690306434,
+          1.1854540690306434
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-65",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -9.672496477040358,
+          3.6473671631191387,
+          -613.4278714133038
+      ],
+      "scale": [
+          0.598490174421193,
+          0.598490174421193,
+          0.598490174421193
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-66",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          14.784088425492694,
+          8.40143449657948,
+          -666.9605165850905
+      ],
+      "scale": [
+          0.6826534081977822,
+          0.6826534081977822,
+          0.6826534081977822
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-67",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          14.668476865065823,
+          -2.9026367105118904,
+          -612.4443033152585
+      ],
+      "scale": [
+          0.5482219224673723,
+          0.5482219224673723,
+          0.5482219224673723
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-68",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          7.611406381419755,
+          -2.835675567789682,
+          -607.7959114578828
+      ],
+      "scale": [
+          0.7645254216728254,
+          0.7645254216728254,
+          0.7645254216728254
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-69",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          7.322894978553437,
+          -4.212395050614682,
+          -636.6362205399653
+      ],
+      "scale": [
+          1.192189376597601,
+          1.192189376597601,
+          1.192189376597601
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-70",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          1.7418486923526224,
+          -3.034493464501312,
+          -601.5729712709842
+      ],
+      "scale": [
+          0.3506472706769275,
+          0.3506472706769275,
+          0.3506472706769275
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-71",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -12.187249254881955,
+          7.0718735797495675,
+          -472.3187733472763
+      ],
+      "scale": [
+          0.3995313363941618,
+          0.3995313363941618,
+          0.3995313363941618
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-72",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          0.24689329207997446,
+          5.646622673746089,
+          -733.2801256744817
+      ],
+      "scale": [
+          0.6211665182539907,
+          0.6211665182539907,
+          0.6211665182539907
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-73",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          6.143265238094376,
+          4.4073860051419445,
+          -666.9854854423044
+      ],
+      "scale": [
+          0.7356456028404343,
+          0.7356456028404343,
+          0.7356456028404343
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-74",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -6.557082732485959,
+          4.9313662885514375,
+          -417.9159826809275
+      ],
+      "scale": [
+          0.7087297592101369,
+          0.7087297592101369,
+          0.7087297592101369
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-75",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -8.036717538664945,
+          5.442917300036994,
+          -642.6462669936185
+      ],
+      "scale": [
+          0.8928846414566531,
+          0.8928846414566531,
+          0.8928846414566531
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-76",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -6.4149175566847685,
+          1.7387350063885485,
+          -674.3904599792113
+      ],
+      "scale": [
+          1.1211365738197323,
+          1.1211365738197323,
+          1.1211365738197323
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-77",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -12.90515461588627,
+          5.740981466332265,
+          -782.2428993556045
+      ],
+      "scale": [
+          0.9510923657918835,
+          0.9510923657918835,
+          0.9510923657918835
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-78",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -0.5494284863025527,
+          1.4699797781469535,
+          -726.9243239502547
+      ],
+      "scale": [
+          0.8646825979433002,
+          0.8646825979433002,
+          0.8646825979433002
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-79",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -4.26474301511899,
+          4.365449006196233,
+          -426.1387512200495
+      ],
+      "scale": [
+          0.5451988447237276,
+          0.5451988447237276,
+          0.5451988447237276
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-80",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          15.207395821141542,
+          3.4786467001289996,
+          -693.7399859744394
+      ],
+      "scale": [
+          0.7521589052960147,
+          0.7521589052960147,
+          0.7521589052960147
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-81",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -11.324272998025755,
+          -9.601655163302446,
+          -664.7161224263109
+      ],
+      "scale": [
+          1.0975759218344654,
+          1.0975759218344654,
+          1.0975759218344654
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-82",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          0.4510734846164475,
+          -5.171859497672961,
+          -507.22272627626535
+      ],
+      "scale": [
+          0.9064581872572521,
+          0.9064581872572521,
+          0.9064581872572521
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-83",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -14.353982471817803,
+          4.160370139668405,
+          -773.4600234287964
+      ],
+      "scale": [
+          1.1236265928493885,
+          1.1236265928493885,
+          1.1236265928493885
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-84",
+      "model": "asteroid3.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -14.0915194476328,
+          8.308776215861059,
+          -416.71975758609545
+      ],
+      "scale": [
+          1.024685622121936,
+          1.024685622121936,
+          1.024685622121936
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-85",
+      "model": "asteroid10.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -6.062318182988218,
+          5.490454553352791,
+          -481.3474850675937
+      ],
+      "scale": [
+          0.38163593384610844,
+          0.38163593384610844,
+          0.38163593384610844
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-86",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -13.5810757777106,
+          -4.069401750289172,
+          -495.0201343127333
+      ],
+      "scale": [
+          0.34173563312613053,
+          0.34173563312613053,
+          0.34173563312613053
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-87",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -9.1452863381077,
+          -0.7572899951666745,
+          -640.3675914276448
+      ],
+      "scale": [
+          0.8939300269570893,
+          0.8939300269570893,
+          0.8939300269570893
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-88",
+      "model": "asteroid5.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -4.391322620185024,
+          -0.47557355697165526,
+          -621.6355256810526
+      ],
+      "scale": [
+          0.37078013225032785,
+          0.37078013225032785,
+          0.37078013225032785
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-89",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          9.104035766633707,
+          -9.424000148424254,
+          -419.1163448798626
+      ],
+      "scale": [
+          0.803645597095396,
+          0.803645597095396,
+          0.803645597095396
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-90",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -10.23863333079895,
+          -1.7447768894551992,
+          -725.5239172594645
+      ],
+      "scale": [
+          1.1567112234957206,
+          1.1567112234957206,
+          1.1567112234957206
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-91",
+      "model": "asteroid6.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          15.73852160107192,
+          6.0328545074353634,
+          -690.9542994204091
+      ],
+      "scale": [
+          1.1423498011877056,
+          1.1423498011877056,
+          1.1423498011877056
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-92",
+      "model": "asteroid4.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -14.819626078198976,
+          8.92439453967928,
+          -665.3847440009908
+      ],
+      "scale": [
+          0.7673476508615276,
+          0.7673476508615276,
+          0.7673476508615276
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-93",
+      "model": "asteroid9.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          19.29171570205895,
+          3.4120752724686927,
+          -573.3589403276133
+      ],
+      "scale": [
+          0.6521329623680123,
+          0.6521329623680123,
+          0.6521329623680123
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-94",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -0.260191070503339,
+          5.032048306621579,
+          -471.94706199761345
+      ],
+      "scale": [
+          0.98486724031649,
+          0.98486724031649,
+          0.98486724031649
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-95",
+      "model": "asteroid8.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          0.4120364915486494,
+          6.940623303281763,
+          -642.0768313792216
+      ],
+      "scale": [
+          1.1898997531500533,
+          1.1898997531500533,
+          1.1898997531500533
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-96",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -5.679216798494012,
+          3.8334078359366384,
+          -737.9208188902694
+      ],
+      "scale": [
+          1.1036050863241795,
+          1.1036050863241795,
+          1.1036050863241795
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-97",
+      "model": "asteroid5.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          1.9276216889935949,
+          0.5045320867434642,
+          -449.03070583089095
+      ],
+      "scale": [
+          0.6855965178308885,
+          0.6855965178308885,
+          0.6855965178308885
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-98",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          3.6971519201497713,
+          5.125879611374501,
+          -711.0932055546934
+      ],
+      "scale": [
+          1.1451627404155713,
+          1.1451627404155713,
+          1.1451627404155713
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+  },
+  {
+      "name": "Asteroid-99",
+      "model": "asteroid7.obj",
+      "type": "mesh",
+      "material": {
+          "diffuse": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "ambient": [
+              0.05,
+              0.05,
+              0.05
+          ],
+          "specular": [
+              0.1,
+              0.1,
+              0.1
+          ],
+          "n": 10,
+          "alpha": 1,
+          "shaderType": 3
+      },
+      "position": [
+          -0.5334697493212142,
+          0.47533193023906684,
+          -532.8400495517594
+      ],
+      "scale": [
+          0.8404802737638772,
+          0.8404802737638772,
+          0.8404802737638772
+      ],
+      "diffuseTexture": "DefaultMaterial_albedo.jpg",
+      "normalTexture": "DefaultMaterial_normal.png"
+    }
       ],
       "pointLights": [
         {
           "name": "lightSource",
           "colour": [1, 1, 1],
           "position": [2, 5, 320],
-          "strength": 300,
+          "strength": 0,
           "quadratic": 0.035,
           "linear": 0.09,
           "constant": 1,
@@ -74,7 +3813,7 @@
           "name": "playerLight",
           "colour": [1, 1, 1],
           "position": [2, 30, 5],
-          "strength": 25,
+          "strength": 50,
           "quadratic": 0.035,
           "linear": 0.09,
           "constant": 1,
@@ -90,6 +3829,19 @@
           "intensity": 0.01,
           "quadratic": 0.035,
           "linear": 0.1,
+          "constant": 1,
+          "nearPlane": 0.5,
+          "farPlane": 400,
+          "shadow": 0
+        },
+
+        {
+          "name": "Enemy1Light",
+          "colour": [1, 0, 0],
+          "position": [0, 8.5, 167.5],
+          "strength": 20,
+          "quadratic": 0.035,
+          "linear": 0.09,
           "constant": 1,
           "nearPlane": 0.5,
           "farPlane": 400,
