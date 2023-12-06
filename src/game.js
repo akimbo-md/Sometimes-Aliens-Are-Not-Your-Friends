@@ -49,13 +49,8 @@ class Game {
         this.spaceshipSpawned = false;
         this.cubeSpawnInterval = null; // Store the interval ID
         this.cubeSpawnRate = 100; // Time in milliseconds between cube spawns
-<<<<<<< Updated upstream
-        this.cubeSpeed = 75;
-        this.shootingCurve = 35; // How much the player can change projectile trajectory
-=======
         this.cubeSpeed = 55;
         this.shootingCurve = 15; // How much the player can change projectile trajectory
->>>>>>> Stashed changes
 
         this.wave = 0;
         this.waveNumber = document.getElementById('waveNumber');
@@ -570,18 +565,6 @@ class Game {
         this.spaceship.model.position[0] = Math.max(minX - overstepMargin, Math.min(maxX + overstepMargin, newX));
         this.spaceship.model.position[1] = Math.max(minY - overstepMargin, Math.min(maxY + overstepMargin, newY));
 
-<<<<<<< Updated upstream
-        //Apply boosting
-        // if (this.isBoosting && this.currentBoost > 0) {
-        //     vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed * 1.3); // Boosted speed
-        //     this.currentBoost -= this.boostDecayRate;
-        // } else {
-        //     vec3.scale(moveDirection, moveDirection, this.spaceshipSpeed);
-        //     this.currentBoost = Math.min(this.maxBoost, this.currentBoost + this.boostRegenRate);
-        // }
-    
-=======
->>>>>>> Stashed changes
         // Translate the position of the spaceship
         this.spaceship.translate(vec3.fromValues(
             newX - this.spaceship.model.position[0],
@@ -1027,15 +1010,6 @@ class Game {
         }
     }
 
-<<<<<<< Updated upstream
-    spawnAsteroid(xPos, yPos, zPos) {
-        // Define the range for spawning asteroids (adjust as needed)
-        // const xMin = -7; // Adjusted minimum X position
-        // const xMax = 12; // Adjusted maximum X position
-        // const yMin = -6; // Adjusted minimum Y position
-        // const yMax = 7;  // Adjusted maximum Y position
-
-=======
     spawnAsteroid(zPos) {
         // Define the range for spawning asteroids
         // const xMin = -7; 
@@ -1048,7 +1022,6 @@ class Game {
         const yMin = -6;
         const yMax = 7; 
         const zOffsetAhead = 400; 
->>>>>>> Stashed changes
 
         // Randomly choose an asteroid model
         const asteroidModels = ["asteroid3.obj", "asteroid4.obj", "asteroid5.obj", 
@@ -1520,23 +1493,8 @@ class Game {
         this.initializeMouseInput();
         this.initializeCamera();
         this.initializeWave();
-<<<<<<< Updated upstream
-        this.spawnAsteroid(-17, 0, 100);
-        this.spawnAsteroid(-17, 0, 150);
-        this.spawnAsteroid(-17, 0, 200);
-        /*
-        for(var i = 0; i < 50 ; i++){
-            let randX = Math.random() * (11 - -11) + -11;
-            let randY = Math.random() * (5 - -5) + -5;
-            this.spawnAsteroid(randX + 17, randY, 500 + i * 10);
-        }
-        */
-        
-    
-=======
 
         hideGameOverMessage();
->>>>>>> Stashed changes
     }
 
     // Runs once every frame non stop after the scene loads
@@ -1739,11 +1697,6 @@ class Game {
                 }
                 */
 
-<<<<<<< Updated upstream
-                if ( this.is_between(this.enemy1.model.position[0], object.model.position[0], 3)
-                    && this.is_between(this.enemy1.model.position[1], object.model.position[1], 2.5) 
-                    && this.is_between(this.enemy1.model.position[2] + 37, object.model.position[2], 2) ){
-=======
                 if ( this.is_between(this.enemy1.model.position[0], object.model.position[0], 2.2)
                     && this.is_between(this.enemy1.model.position[1], object.model.position[1], 2) 
                     && this.is_between(this.enemy1.model.position[2] + 38, object.model.position[2], 2.2) 
@@ -1754,7 +1707,6 @@ class Game {
                 
                     object.hasCollided = true;
                     object.collisionTime = 0;
->>>>>>> Stashed changes
 
                     if (!this.intermission) {
                         this.enemy1Health -= 10;
@@ -1781,10 +1733,6 @@ class Game {
                     object.collisionTime = 0;
 
                     console.log("PLAYER HAS BEEN HIT!");
-<<<<<<< Updated upstream
-                    object.model.position = vec3.fromValues(0, 0, 1000);
-=======
->>>>>>> Stashed changes
                     this.playerHealth -= 5;
                     this.updateHealthBar();
                 }
@@ -1796,28 +1744,11 @@ class Game {
                 object.rotate('x', Math.random() * 0.01);
                 object.rotate('y', Math.random() * 0.01);
                 object.rotate('z', Math.random() * 0.01);
-<<<<<<< Updated upstream
-                
-=======
-
->>>>>>> Stashed changes
                 this.state.objects.forEach((cube) => {
 
                     if (cube.type == "cube")  {
                         if ( this.is_between(object.model.position[0] + 17, cube.model.position[0], 1.5) 
                           && this.is_between(object.model.position[1], cube.model.position[1], 2) 
-<<<<<<< Updated upstream
-                          && this.is_between(object.model.position[2], cube.model.position[2], 0.5) ) {
-                            
-                            object.model.position = vec3.fromValues(0, 0, 0);
-                            cube.model.position = vec3.fromValues(0, 0, 1000);
-                            
-                            console.log("LASER HIT ASTEROID!");
-                            }
-                    }
-
-
-=======
                           && this.is_between(object.model.position[2], cube.model.position[2], 0.5) 
                           && !object.hasCollided) {
                             
@@ -1833,23 +1764,11 @@ class Game {
                             console.log("LASER HIT ASTEROID!");
                         }
                     }
->>>>>>> Stashed changes
                 });
                 
                 // Collision condition
                 if ( this.is_between(this.spaceship.model.position[0], object.model.position[0] + 17, 1.5) 
                     && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1.5) 
-<<<<<<< Updated upstream
-                    && this.is_between(this.spaceship.model.position[2] - 15, object.model.position[2], 0.3) ) {
-                    
-                    object.model.position = vec3.fromValues(0, 0, 0);
-                    console.log("HIT BY ASTEROID!");
-                    this.playerHealth -= 10;
-                    this.updateHealthBar();
-                }
-
-
-=======
                     && this.is_between(this.spaceship.model.position[2] - 15, object.model.position[2], 0.3) 
                     && !object.hasCollided) {
 
@@ -1862,7 +1781,6 @@ class Game {
                     this.playerHealth -= 25;
                     this.updateHealthBar();
                 }
->>>>>>> Stashed changes
             }
         });
         

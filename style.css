@@ -136,9 +136,6 @@
     font-family: 'Orbitron', sans-serif;
     font-size: 69px;
     text-align: center;
-<<<<<<< Updated upstream
-    display: none; /* hidden */
-=======
     display: none;
 }
 
@@ -157,7 +154,6 @@
     font-family: 'Orbitron', sans-serif;
     text-align: center;
     display: none;
->>>>>>> Stashed changes
 }
 
 #scoreDisplay {
@@ -166,8 +162,6 @@
     left: 20px;
     font-size: 24px;
     color: white;
-<<<<<<< Updated upstream
-=======
     font-family: 'Orbitron', sans-serif;
     display: none;
 }
@@ -201,5 +195,4 @@
 #volumeSlider {
     width: 150px;
     vertical-align: middle;
->>>>>>> Stashed changes
 }
