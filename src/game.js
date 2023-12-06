@@ -53,6 +53,7 @@ class Game {
         this.waveNumber = document.getElementById('waveNumber');
         this.waveComplete = false; // For round intermission
 
+        
         this.enemy1 = getObject(state, "Enemy1");
         this.enemySpeed = 1;
         this.enemy1Health = 200;
@@ -70,6 +71,7 @@ class Game {
         this.enemy1.zMovementFactor = 1;
         this.enemy1MoveDirection = [];
         this.enemy1Velocity = [];
+        
         this.enemyIsAttacking = false;
         this.enemyAttackIntervalSet = false;
         this.enemyFireRate = 350;
@@ -714,26 +716,21 @@ class Game {
     }
 
     spawnAsteroidField() {
-        const numAsteroids = 300
+        const numAsteroids = 1;
 
         for (let i = 0; i < numAsteroids; i++) {
             const zPos = 200 + (i * (400 / numAsteroids));
-            this.spawnAsteroid(zPos);
+            this.spawnAsteroid(0, 0, zPos);
         }
     }
 
-    spawnAsteroid(zPos) {
+    spawnAsteroid(xPos, yPos, zPos) {
         // Define the range for spawning asteroids (adjust as needed)
         // const xMin = -7; // Adjusted minimum X position
         // const xMax = 12; // Adjusted maximum X position
         // const yMin = -6; // Adjusted minimum Y position
         // const yMax = 7;  // Adjusted maximum Y position
 
-        const xMin = -15; // Adjusted minimum X position
-        const xMax = 20; // Adjusted maximum X position
-        const yMin = -6; // Adjusted minimum Y position
-        const yMax = 7;  // Adjusted maximum Y position
-        const zOffsetAhead = 400; // Distance ahead of the spaceship
 
         // Randomly choose an asteroid model
         const asteroidModels = ["asteroid3.obj", "asteroid4.obj", "asteroid5.obj", 
@@ -757,10 +754,9 @@ class Game {
                 shaderType: 3
             },
             position: vec3.fromValues(
-                Math.random() * (xMax - xMin) + xMin - 20,
-                Math.random() * (yMax - yMin) + yMin + 5,
-                //spaceshipPosition[2] + zOffsetAhead // Z position ahead of the spaceship
-                zPos + zOffsetAhead
+                xPos,
+                yPos,
+                zPos
             ),
             scale: vec3.fromValues(sizeFactor, sizeFactor, sizeFactor),
             diffuseTexture: "DefaultMaterial_albedo.jpg",
@@ -769,9 +765,11 @@ class Game {
 
         // Add the asteroid to the game state
         const newAsteroid = spawnObject(asteroidConfig, this.state);
+        this.spawnedObjects.push(newAsteroid);
+        this.asteroidPool.push(asteroidConfig);
+        
         if (newAsteroid && newAsteroid.model) { // Check if the model property exists ?? Doesn't work
-            this.spawnedObjects.push(newAsteroid);
-            this.asteroidPool.push(newAsteroid); // Add to the asteroid pool
+             // Add to the asteroid pool
             console.log(this.asteroidPool[0]);
         }
     }
@@ -1080,8 +1078,19 @@ class Game {
         this.initializeControls();
         this.initializeMouseInput();
         this.initializeCamera();
-
         this.initializeWave();
+        this.spawnAsteroid(-17, 0, 100);
+        this.spawnAsteroid(-17, 0, 150);
+        this.spawnAsteroid(-17, 0, 200);
+        /*
+        for(var i = 0; i < 50 ; i++){
+            let randX = Math.random() * (11 - -11) + -11;
+            let randY = Math.random() * (5 - -5) + -5;
+            this.spawnAsteroid(randX + 17, randY, 500 + i * 10);
+        }
+        */
+        
+    
     }
 
     // Runs once every frame non stop after the scene loads
@@ -1240,17 +1249,27 @@ class Game {
             // Player Projectiles
             if (object.name.startsWith('Cube-')) {
                 object.rotate('z', Math.random() * 1.5);
+                
+                /*
+                if (this.frame % 500 == 0){
+                    console.log(object.model.position[0] + ' ' + object.model.position[1] + ' ' + object.model.position[2]);
+                }
+                */
 
                 if ( this.is_between(this.enemy1.model.position[0], object.model.position[0], 3)
                     && this.is_between(this.enemy1.model.position[1], object.model.position[1], 2.5) 
                     && this.is_between(this.enemy1.model.position[2] + 37, object.model.position[2], 2) ){
+
                     if (!this.intermission) {
-                        this.enemy1Health -= 1;
+                        this.enemy1Health -= 10;
                         this.updateHealthBar()
                     }
                     console.log("UFO HIT!");
-                    ;
+                    object.model.position = vec3.fromValues(0, 0, 1000);
+                    
                 }
+                
+                
             }
 
             // Enemy Projectiles
@@ -1260,7 +1279,8 @@ class Game {
                     && this.is_between(this.spaceship.model.position[2], object.model.position[2], 1) ) {
 
                     console.log("PLAYER HAS BEEN HIT!");
-                    this.playerHealth -= 1;
+                    object.model.position = vec3.fromValues(0, 0, 1000);
+                    this.playerHealth -= 5;
                     this.updateHealthBar();
                 }
             }
@@ -1271,9 +1291,40 @@ class Game {
                 object.rotate('x', Math.random() * 0.01);
                 object.rotate('y', Math.random() * 0.01);
                 object.rotate('z', Math.random() * 0.01);
+                
+                this.state.objects.forEach((cube) => {
+
+                    if (cube.type == "cube")  {
+                        if ( this.is_between(object.model.position[0] + 17, cube.model.position[0], 1.5) 
+                          && this.is_between(object.model.position[1], cube.model.position[1], 2) 
+                          && this.is_between(object.model.position[2], cube.model.position[2], 0.5) ) {
+                            
+                            object.model.position = vec3.fromValues(0, 0, 0);
+                            cube.model.position = vec3.fromValues(0, 0, 1000);
+                            
+                            console.log("LASER HIT ASTEROID!");
+                            }
+                    }
+
+
+                });
+                
+                // Collision condition
+                if ( this.is_between(this.spaceship.model.position[0], object.model.position[0] + 17, 1.5) 
+                    && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1.5) 
+                    && this.is_between(this.spaceship.model.position[2] - 15, object.model.position[2], 0.3) ) {
+                    
+                    object.model.position = vec3.fromValues(0, 0, 0);
+                    console.log("HIT BY ASTEROID!");
+                    this.playerHealth -= 10;
+                    this.updateHealthBar();
+                }
+
+
             }
         });
-
+        
+        this.frame++;
         // Find the associated cube and update the light's position (WIP)
         state.pointLights.forEach(light => {
             const associatedCube = state.objects.find(obj => obj.lightSource === light);
