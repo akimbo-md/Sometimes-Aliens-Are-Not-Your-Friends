@@ -1080,6 +1080,8 @@ class Game {
         this.initializeCamera();
         this.initializeWave();
         this.spawnAsteroid(-17, 0, 100);
+        this.spawnAsteroid(-17, 0, 150);
+        this.spawnAsteroid(-17, 0, 200);
         /*
         for(var i = 0; i < 50 ; i++){
             let randX = Math.random() * (11 - -11) + -11;
@@ -1264,21 +1266,10 @@ class Game {
                     }
                     console.log("UFO HIT!");
                     object.model.position = vec3.fromValues(0, 0, 1000);
-                    ;
-                }
-                /*
-                for (var i = 0 ; 0 < this.asteroidPool.length ; i++){
-                    console.log("CHECK");
-                        if ( this.is_between(object.model.position[0], this.asteroidPool[i].position[0], 3) 
-                          && this.is_between(object.model.position[1], this.asteroidPool[i].position[1], 3) 
-                          && this.is_between(object.model.position[2], this.asteroidPool[i].position[2], 1) ) {
                     
-                            asteroid.model.position = vec3.fromValues(0, 0, 0);
-                            console.log("LASER HIT ASTEROID!");
-                        }
-
-                    }
-*/
+                }
+                
+                
             }
 
             // Enemy Projectiles
@@ -1297,19 +1288,31 @@ class Game {
             // Asteroids
             if (object.name.startsWith('Asteroid-')) {
                 // Random rotation around each axis
-                if (this.frame % 50 == 0){
-                    
-                    console.log("SHIP " + this.spaceship.model.position[0] + '  ' + this.spaceship.model.position[1] + "  " +  this.spaceship.model.position[2]);
-                }
-               
                 object.rotate('x', Math.random() * 0.01);
                 object.rotate('y', Math.random() * 0.01);
                 object.rotate('z', Math.random() * 0.01);
+                
+                this.state.objects.forEach((cube) => {
 
+                    if (cube.type == "cube")  {
+                        if ( this.is_between(object.model.position[0] + 17, cube.model.position[0], 1.5) 
+                          && this.is_between(object.model.position[1], cube.model.position[1], 2) 
+                          && this.is_between(object.model.position[2], cube.model.position[2], 0.5) ) {
+                            
+                            object.model.position = vec3.fromValues(0, 0, 0);
+                            cube.model.position = vec3.fromValues(0, 0, 1000);
+                            
+                            console.log("LASER HIT ASTEROID!");
+                            }
+                    }
+
+
+                });
+                
                 // Collision condition
                 if ( this.is_between(this.spaceship.model.position[0], object.model.position[0] + 17, 1.5) 
                     && this.is_between(this.spaceship.model.position[1], object.model.position[1], 1.5) 
-                    && this.is_between(this.spaceship.model.position[2] -15, object.model.position[2], 0.3) ) {
+                    && this.is_between(this.spaceship.model.position[2] - 15, object.model.position[2], 0.3) ) {
                     
                     object.model.position = vec3.fromValues(0, 0, 0);
                     console.log("HIT BY ASTEROID!");
